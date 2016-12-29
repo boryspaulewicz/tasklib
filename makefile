@@ -24,7 +24,7 @@ project: project.cpp $(OBJS)
 guitest: guitest.cpp $(OBJS)
 	g++ $^ -o $@ $(CPPFLAGS) $(LDFLAGS)
 
-$(TASKS):
+$(TASKS): $(OBJS)
 	git commit -a -m "makefile commit"
 	$(foreach var,$@, git rev-parse HEAD > ../$(var)/.lib_sha; \
 	cd ../$(var)/; \
