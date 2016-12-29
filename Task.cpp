@@ -9,8 +9,8 @@ int Task::session_id;
 bool Task::user_data_initialized = false;
 bool Task::sha_data_initialized = false;
 
-#define LIB_SHA ".lib_sha"
-#define PROJECT_SHA ".project_sha"
+#define LIB_SHA "lib_sha"
+#define PROJECT_SHA "project_sha"
 
 void get_sha_data(){
   if(Task::sha_data_initialized)

@@ -26,10 +26,10 @@ guitest: guitest.cpp $(OBJS)
 
 $(TASKS): $(OBJS)
 	git commit -a -m "makefile commit" || true
-	$(foreach var,$@, git rev-parse HEAD > ../$(var)/.lib_sha; \
+	$(foreach var,$@, git rev-parse HEAD > ../$(var)/lib_sha; \
 	cd ../$(var)/; \
 	git commit -a -m "makefile commit" || true; \
-	git rev-parse HEAD > .project_sha; \
+	git rev-parse HEAD > project_sha; \
 	make; \
 	rm -f start.tgz; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
