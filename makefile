@@ -25,10 +25,10 @@ guitest: guitest.cpp $(OBJS)
 	g++ $^ -o $@ $(CPPFLAGS) $(LDFLAGS)
 
 $(TASKS): $(OBJS)
-	git commit -a --allow-empty -m "makefile commit"
+	git commit -a -m "makefile commit" || true
 	$(foreach var,$@, git rev-parse HEAD > ../$(var)/.lib_sha; \
 	cd ../$(var)/; \
-	git commit -a --allow-empty -m "makefile commit"; \
+	git commit -a -m "makefile commit" || true; \
 	git rev-parse HEAD > .project_sha; \
 	make; \
 	rm -f start.tgz; \
