@@ -31,5 +31,7 @@ $(TASKS):
 	git commit -a -m "makefile commit"; \
 	git rev-parse HEAD > .project_sha; \
 	make; \
+	rm -f start.tgz; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
-	export TASKLIB=task; ../tasklib/project register $(var))
+	export TASKLIB=task; \
+	../tasklib/project register $(var))
