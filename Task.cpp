@@ -129,6 +129,9 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
     throw(runtime_error("Empty task name"));
   session_data["task"] = "'" + task_name + "'";
 
+  if(getenv("TASKLIB_NODB") != nullptr)
+    use_db = false;
+  
   get_user_data();
   if(getenv("TASKLIB") == nullptr){
     cout << "Warning: TASKLIB value not set" << endl;
