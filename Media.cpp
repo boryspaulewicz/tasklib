@@ -6,13 +6,14 @@ void Media::init(){
   mouse_pressed.resize(Mouse::Button::ButtonCount);
   mouse_released.resize(Mouse::Button::ButtonCount);
 
-  cout << "Creating RenderWindow object" << endl;
+  cout << "Tworzê obiekt RenderWindow." << endl;
   window = new RenderWindow(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
   window->setVerticalSyncEnabled(true);
   window->setMouseCursorVisible(false);
 
-  if(!font.loadFromFile("/usr/share/fonts/truetype/lato/Lato-Regular.ttf"))
-    throw(runtime_error("Couldn't load the default font"));
+  string font_name = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
+  if(!font.loadFromFile(font_name))
+    throw(runtime_error("Nie uda³o siê za³adowaæ domy¶lnej czcionki: " + font_name));
   text.setFont(font);
   width = VideoMode().getDesktopMode().width; 
   height = VideoMode().getDesktopMode().height;

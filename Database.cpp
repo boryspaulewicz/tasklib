@@ -56,11 +56,13 @@ void Database::connect(){
   if(!(con == nullptr || con->isClosed()))
     return;
 
-  if(getenv("TASKLIB") == nullptr){
-    Uservalue uv("Podaj hasło:", false);
-    password = uv.value;
-  }else{
-    password = string(getenv("TASKLIB"));
+  if(password == ""){
+    if(getenv("TASKLIB") == nullptr){
+      Uservalue uv("Podaj hasło:", false);
+      password = uv.value;
+    }else{
+      password = string(getenv("TASKLIB"));
+    }
   }
   
   try{
@@ -68,7 +70,7 @@ void Database::connect(){
     con = unique_ptr<Connection>(driver->connect("tcp://5.189.166.138:443", "task", password));
     con->setSchema("task");
     stmt = unique_ptr<Statement>(con->createStatement());
-    unique_ptr<ResultSet> res(query("SELECT 'Established database connection' AS message"));
+    unique_ptr<ResultSet> res(query("SELECT 'Ustanowiłem połączenie z bazą danych' AS message"));
     while(res->next()){
       cout << res->getString("message") << endl;
     }
@@ -82,7 +84,7 @@ void Database::disconnect(){
   if(!(con == nullptr || con->isClosed())){
     con->close();
     con = nullptr;
-    cout << "Zamykanie połączenia z bazą danych" << endl;
+    cout << "Zamykam ewentualne połączenie z bazą danych" << endl;
   }
 }
 

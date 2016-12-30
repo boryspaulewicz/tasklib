@@ -69,7 +69,7 @@ protected:
   friend void get_sha_data();
   
   friend void set_project_name(string project);
-  
+
   friend void get_user_data(string fname = "./userdata.utxt");
 
   friend string get_random_condition(string task_name, vector<string> conditions = {});
@@ -77,7 +77,7 @@ protected:
   void run(string task_name, initializer_list<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials_ = 0);
 
-  virtual bool trial_code(int state);
+  virtual bool trial_code(int state) = 0;
 };
 
 int random_int(int min, int max);

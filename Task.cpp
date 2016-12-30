@@ -12,6 +12,13 @@ bool Task::sha_data_initialized = false;
 #define LIB_SHA "lib_sha"
 #define PROJECT_SHA "project_sha"
 
+int random_int(int min, int max){
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+}
+
 void get_sha_data(){
   if(Task::sha_data_initialized)
     return;
@@ -45,7 +52,7 @@ void set_project_name(string project){
 
 void get_user_data(string fname){
   if(!Task::user_data_initialized){
-    cout << "Getting session data" << endl;
+    cout << "Pobieram dane osobowe" << endl;
     Instruction in(fname);
     Userdata ud;
     for(auto d : ud.data)
@@ -56,7 +63,7 @@ void get_user_data(string fname){
 
 string get_random_condition(string task_name, vector<string> conditions){
   map<string, int> counts;
-  // liczebności również dla brakujących warunków (wtedy = 0)
+  // liczebności również warunków, które jeszcze nie wystąpiły w bazie (wtedy = 0)
   for(auto c : conditions)
     counts[c] = 0;
   auto res = Task::db.query("select cnd, count(*) from session where task = '" + task_name +
@@ -66,7 +73,7 @@ string get_random_condition(string task_name, vector<string> conditions){
     conditions.push_back(res->getString(1));
   }
 
-  cout << "Condition counts for task " + task_name + ":" << endl;
+  cout << "Liczba sesji na warunek " + task_name + ":" << endl;
   for(auto c : counts)
     cout << c.first << ": " << c.second << endl;
 
@@ -88,26 +95,22 @@ string get_random_condition(string task_name, vector<string> conditions){
     chosen = conditions[j];
   }
   Task::session_data["cnd"] = "'" + chosen + "'";
-  cout << "Selected condition: " + chosen << endl;
+  cout << "Wybrany warunek: " + chosen << endl;
   return chosen;
 }
 
 void Task::register_session(){
   // task, name, age, gender, opcjonalne: project, cnd, stage, tag, project_sha, lib_sha
   if(user_data_initialized){
-    cout << "Registering session" << endl;
+    cout << "Rejestruję sesję" << endl;
     db.execute(db.insert_statement("session", session_data));
     auto r = db.query("SELECT LAST_INSERT_ID();");
     if(r->next())
       session_id = r->getInt(1);
     cout << "session_id: " << session_id << endl;
   }else{
-    throw(runtime_error("Session data uninitialized, cannot register this session;"));
+    throw(runtime_error("Brak unikalnego identyfikatora, nie mogę zarejestrować tej sesji."));
   }
-}
-
-void Task::mark_session_finished(){
-  db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
 }
 
 void Task::send_data(string task_name, map<string, string> d){
@@ -128,7 +131,7 @@ void Task::send_data(string task_name, map<string, string> d){
 void Task::run(string task_name, initializer_list<pair<string, vector<string> > > levels, unsigned int b, unsigned int n, unsigned int nof_trials_){
 
   if(task_name == "")
-    throw(runtime_error("Empty task name"));
+    throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
 
   if(getenv("TASKLIB_NODB") != nullptr)
@@ -136,9 +139,9 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
   
   get_user_data();
   if(getenv("TASKLIB") == nullptr){
-    cout << "Warning: TASKLIB value not set" << endl;
+    cout << "Ostrzeżenie: zmienna TASKLIB niezdefiniowana" << endl;
   }else{
-    cout << "Using TASKLIB value" << endl;
+    cout << "Używam wartości zmiennej TASKLIB" << endl;
   }
   get_sha_data();
   if(use_db){
@@ -152,7 +155,7 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
   if(nof_trials_ == 0){
     nof_trials = scen->size();
   }else if(nof_trials_ > scen->size()){
-    throw(std::runtime_error("Liczba prob wieksza niz dlugosc scenariusza"));
+    throw(std::runtime_error("Liczba prób większa niż długość scenariusza"));
   }else{
     nof_trials = nof_trials_;
   }
@@ -161,7 +164,7 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
     
   Media::init();
 
-  cout << "Starting the trial_code loop" << endl;
+  cout << "Rozpoczynam pętlę prób zadania" << endl;
   task_start = high_resolution_clock::now();
   for(current_trial = 0; current_trial < nof_trials; current_trial++){
 
@@ -174,33 +177,26 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
 
     while(trial_code(state) && window->isOpen())
       process_events(event);
-
-    if(use_db)
-      if(send_data_thread != nullptr){
+    if(!window->isOpen())
+      break;
+    
+    if(use_db){
+      if(send_data_thread != nullptr)
         send_data_thread->join();
-    }
-    if(use_db)
       send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
+    }
   }
     
   if(use_db){
     send_data_thread->join();
+    if(current_trial == nof_trials)
+      mark_session_finished();
     db.disconnect();
-    mark_session_finished();
   }
 
   Media::close();
 }
 
-// Musi być zdefiniowana, żeby dało się skompilować, bo jest wirtualna
-// (a może wystarczy = 0?)
-bool Task::trial_code(int state){
-  return true;
-}
-
-int random_int(int min, int max){
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> dis(min, max);
-    return dis(gen);
+void Task::mark_session_finished(){
+  db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
 }
