@@ -3,11 +3,11 @@ include makefile.mak
 tgz=
 
 TASKS= test
-.PHONY: $(TASKS)
+.PHONY: $(TASKS) $(tgz)
 
 UTILS= project guitest
 
-all: $(UTILS) $(TASKS)
+all: $(UTILS) tasks
 
 show:
 	echo "$(TASKS)"
@@ -19,17 +19,16 @@ clear:
 $(OBJS:.o=.cpp): $(OBJS:.o=.hpp)
 
 $(OBJS): $(OBJS:.o=.cpp)
-	$(foreach var, $@, g++ -c $(var:.o=.cpp) -o $(var) ${CPPFLAGS})
+	## $(foreach var, $@, g++ -c $(var:.o=.cpp) -o $(var) ${CXXFLAGS})
 
 project: project.cpp $(OBJS)
-	g++ $^ -o $@ $(CPPFLAGS) $(LDFLAGS)
+	## g++ $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
 
 guitest: guitest.cpp $(OBJS)
-	g++ $^ -o $@ $(CPPFLAGS) $(LDFLAGS)
+	## g++ $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
 
-$(TASKS): $(tgz)
-	git commit -a -m "makefile commit" || true
-	$(foreach var,$@, cd ../$(var)/; make)
+tasks: $(TASKS) $(tgz)
+	$(foreach var,$+, cd ../$(var)/; make)
 	$(foreach var,$^, \
 	git commit -a -m "makefile commit" || true; \
 	cd ../$(var)/; \
