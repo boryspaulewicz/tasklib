@@ -1,6 +1,6 @@
 include makefile.mak
 
-RELEASE=
+tgz=
 
 TASKS= test
 .PHONY: $(TASKS)
@@ -27,7 +27,7 @@ project: project.cpp $(OBJS)
 guitest: guitest.cpp $(OBJS)
 	g++ $^ -o $@ $(CPPFLAGS) $(LDFLAGS)
 
-$(TASKS): $(RELEASE)
+$(TASKS): $(tgz)
 	git commit -a -m "makefile commit" || true
 	$(foreach var,$@, cd ../$(var)/; make)
 	$(foreach var,$^, \
