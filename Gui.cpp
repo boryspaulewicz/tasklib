@@ -154,6 +154,9 @@ Instruction::Instruction(string fname, initializer_list<string> labels, float wi
   set_default_size(get_screen()->get_width() * width, get_screen()->get_height() * height);
 
   frame.add(vbox);
+  Pango::FontDescription fd;
+  fd.set_size(10);
+  tv.override_font(fd);
   tv.get_buffer()->set_text(contents.str());
   tv.property_cursor_visible() = false;
   tv.set_wrap_mode(WRAP_WORD);

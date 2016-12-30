@@ -13,6 +13,7 @@
 #include <gtkmm/textview.h>
 #include <gtkmm/comboboxtext.h>
 #include <gtkmm/messagedialog.h>
+#include <pangomm/fontdescription.h>
 #include <iostream>
 #include <fstream>
 #include <string>
