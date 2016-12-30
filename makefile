@@ -3,11 +3,11 @@ include makefile.mak
 tgz=
 
 TASKS= test
-.PHONY: $(TASKS) $(tgz)
+.PHONY: $(TASKS) tgzs
 
 UTILS= project guitest
 
-all: $(UTILS) tasks
+all: tasks tgzs $(UTILS)
 
 show:
 	echo "$(TASKS)"
@@ -27,8 +27,10 @@ project: project.cpp $(OBJS)
 guitest: guitest.cpp $(OBJS)
 	## g++ $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
 
-tasks: $(TASKS) $(tgz)
+tasks: $(TASKS)
 	$(foreach var,$+, cd ../$(var)/; make)
+
+tgzs: $(tgz)
 	$(foreach var,$^, \
 	git commit -a -m "makefile commit" || true; \
 	cd ../$(var)/; \
