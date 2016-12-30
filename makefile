@@ -1,34 +1,38 @@
-include makefile.mak
-
+## make tgz=test utworzy archiwum projektu test z plikami sha.
 tgz=
 
-TASKS= test
+CXXFLAGS= -O3 -finline-functions -std=c++11 -O3 -I../tasklib `pkg-config gtkmm-3.0 --cflags`
+
+LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
+
+OBJS= Task.o Conditions.o Scenario.o Database.o Gui.o Media.o
+
+export CXXFLAGS LDFLAGS
+
+TASKS= test $(tgz)
+
 .PHONY: $(TASKS) tgzs
 
 UTILS= project guitest
 
-all: tasks tgzs $(UTILS)
-
-show:
-	echo "$(TASKS)"
+all: libtask.a $(UTILS) tasks tgzs
 
 clear:
-	rm -f $(OBJS) $(UTILS) $(addsufix /start.tgz,$(addprefix ../,$(TASKS))) $(addsufix /start,$(addprefix ../,$(TASKS)))
+	rm -f libtask.a $(OBJS) $(UTILS) \
 
-## Zale¿no¶æ
-$(OBJS:.o=.cpp): $(OBJS:.o=.hpp)
+libtask.a: $(OBJS)
+	ar rv $@ $^
 
-$(OBJS): $(OBJS:.o=.cpp)
-	## $(foreach var, $@, g++ -c $(var:.o=.cpp) -o $(var) ${CXXFLAGS})
+$(OBJS): $(OBJS:.o=.hpp)
 
-project: project.cpp $(OBJS)
-	## g++ $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+$(OBJS): ## regu³a implicitna, inaczej zawsze kompiluje wszystkie elementy
 
-guitest: guitest.cpp $(OBJS)
-	## g++ $^ -o $@ $(CXXFLAGS) $(LDFLAGS)
+project: project.cpp libtask.a
+
+guitest: guitest.cpp libtask.a
 
 tasks: $(TASKS)
-	$(foreach var,$+, cd ../$(var)/; make)
+	$(foreach var,$^, cd ../$(var)/; make)
 
 tgzs: $(tgz)
 	$(foreach var,$^, \

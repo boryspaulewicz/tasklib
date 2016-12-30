@@ -18,22 +18,24 @@ void get_sha_data(){
   string value;
   ifstream f;
   f.open(LIB_SHA);
-  if(!f.good())
-    throw(runtime_error("Nie udało się otworzyć pliku " LIB_SHA));
-  getline(f, value);
-  if(value.size() != 40)
-    throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
-  Task::session_data["lib_sha"] = "'" + value + "'";
-  cout << "lib_sha: " << value << endl;
+  if(f.good()){
+    getline(f, value);
+    if(value.size() != 40)
+      throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
+    Task::session_data["lib_sha"] = "'" + value + "'";
+  }else{
+    cout << "Nie znalazłem pliku " LIB_SHA "." << endl;
+  }
   f.close();
   f.open(PROJECT_SHA);
-  if(!f.good())
-    throw(runtime_error("Nie udało się otworzyć pliku " PROJECT_SHA));
-  getline(f, value);
-  if(value.size() != 40)
-    throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
-  Task::session_data["project_sha"] = "'" + value + "'";
-  cout << "project_sha: " << value << endl;
+  if(f.good()){
+    getline(f, value);
+    if(value.size() != 40)
+      throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
+    Task::session_data["project_sha"] = "'" + value + "'";
+  }else{
+    cout << "Nie znalazłem pliku" PROJECT_SHA "." << endl;
+  }
   Task::sha_data_initialized = true;
 }
 

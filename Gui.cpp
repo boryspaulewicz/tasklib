@@ -34,6 +34,33 @@ void Taskwindow::run(){
   Gui::m.run(*this);
 }
 
+Textview::Textview(){
+    Pango::FontDescription fd;
+    fd.set_size(15 * Pango::SCALE);
+    override_font(fd);
+    property_cursor_visible() = false;
+    set_wrap_mode(WRAP_WORD);
+    set_left_margin(10);
+    set_right_margin(10);
+    set_justification(JUSTIFY_FILL);
+}
+
+void Textview::set_text(string text){
+  get_buffer()->set_text(text);
+}
+
+void Textview::load_from_file(string fname){
+    ifstream f;
+    f.open(fname);
+    if(!f.good()){
+      throw(runtime_error("Nie udało się otworzyć pliku " + fname));
+      exit(1);
+    }
+    stringstream contents;
+    contents << f.rdbuf();
+    set_text(contents.str());
+}
+
 void Userdata::button_pressed(){
   if(trim(name.get_text()) == string("")){
     MessageDialog msg(*this, "Brak danych w polu Identyfikator");
@@ -141,28 +168,12 @@ Instruction::~Instruction(){
 }
   
 Instruction::Instruction(string fname, initializer_list<string> labels, float width, float height){
-  ifstream f;
-  f.open(fname);
-  if(!f.good()){
-    throw(runtime_error("Nie udało się otworzyć pliku " + fname));
-    exit(1);
-  }
-  stringstream contents;
-  contents << f.rdbuf();
+  tv.load_from_file(fname);
 
   init();
   set_default_size(get_screen()->get_width() * width, get_screen()->get_height() * height);
 
   frame.add(vbox);
-  Pango::FontDescription fd;
-  fd.set_size(15 * Pango::SCALE);
-  tv.override_font(fd);
-  tv.get_buffer()->set_text(contents.str());
-  tv.property_cursor_visible() = false;
-  tv.set_wrap_mode(WRAP_WORD);
-  tv.set_left_margin(10);
-  tv.set_right_margin(10);
-  tv.set_justification(JUSTIFY_FILL);
   vbox.set_spacing(10);
   vbox.set_border_width(10);
   vbox.pack_start(tv);

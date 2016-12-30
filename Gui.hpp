@@ -38,6 +38,18 @@ public:
 
 };
 
+class Textview : public TextView{
+
+public:
+
+  Textview();
+  
+  void set_text(string text);
+  
+  void load_from_file(string fname);
+
+};
+
 class Userdata : public Taskwindow{
   
   VBox vbox;
@@ -95,7 +107,7 @@ class Instruction : public Taskwindow{ // Gtk::Window{
 public:
 
   string value;
-  TextView tv;
+  Textview tv;
   
   Instruction(string fname, initializer_list<string> labels = {"Dalej"}, float width = .6, float height = .8);
 
