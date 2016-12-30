@@ -1,8 +1,9 @@
 include makefile.mak
 
-RELEASE=no
+RELEASE=
 
-TASKS:= $(shell ls ../ | sed /tasklib/d)
+TASKS= test
+.PHONY: $(TASKS)
 
 UTILS= project guitest
 
@@ -26,13 +27,13 @@ project: project.cpp $(OBJS)
 guitest: guitest.cpp $(OBJS)
 	g++ $^ -o $@ $(CPPFLAGS) $(LDFLAGS)
 
-$(TASKS): $(OBJS)
+$(TASKS): $(RELEASE)
 	git commit -a -m "makefile commit" || true
-	$(foreach var,$@, git rev-parse HEAD > ../$(var)/lib_sha; \
-	cd ../$(var)/; \
+	$(foreach var,$@, cd ../$(var)/; make)
+	$(foreach var,$^, \
 	git commit -a -m "makefile commit" || true; \
+	cd ../$(var)/; \
 	git rev-parse HEAD > project_sha; \
-	make; \
 	rm -f start.tgz; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
