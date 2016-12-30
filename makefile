@@ -1,5 +1,7 @@
 include makefile.mak
 
+RELEASE=no
+
 TASKS:= $(shell ls ../ | sed /tasklib/d)
 
 UTILS= project guitest
