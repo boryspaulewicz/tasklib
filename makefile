@@ -36,12 +36,14 @@ guitest: guitest.cpp libtask.a
 tasks: $(TASKS)
 	$(foreach var,$^, cd ../$(var)/; make)
 
+## git commit -a -m "makefile commit" || true; \
+
 tgzs: $(tgz)
 	$(foreach var,$^, \
-	git commit -a -m "makefile commit" || true; \
+	git commit -a -v || true; \
 	git rev-parse HEAD > ../$(var)/lib_sha; \
 	cd ../$(var)/; \
-	git commit -a -m "makefile commit" || true; \
+	git commit -a -v || true; \
 	git rev-parse HEAD > project_sha; \
 	rm -f start.tgz; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
