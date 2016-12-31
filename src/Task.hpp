@@ -63,6 +63,10 @@ protected:
 
  public:
 
+  bool debug = false;
+
+  inline void display();
+  
   bool use_db = true;
   static Database db;
 
@@ -79,6 +83,20 @@ protected:
 
   virtual bool trial_code(int state) = 0;
 };
+
+void Task::display(){
+  if(debug){
+    string condition;
+    for(auto& f : cs->factors)
+      condition += f.first + ": " + cnd(f.first);
+    Text text;
+    text.setFont(font); text.setCharacterSize((float)height * 0.02);
+    text.setString("state: " + to_string(state) + " condition: " + condition);
+    text.setPosition(Vector2f(0, 0));
+    draw(text);
+  }
+  Media::display();
+}
 
 int random_int(int min, int max);
 

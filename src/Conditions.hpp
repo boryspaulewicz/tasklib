@@ -10,15 +10,14 @@
 using namespace std;
 
 class Conditions{
-private:
-  
+
+public:
+
   map<string,vector<string> > factors;
   map<string,vector<string> > conditions;
   
   void fill_conditions();
   
-public:
-
   int nof_cnds;
   vector<string> names;
   

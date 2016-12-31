@@ -27,6 +27,8 @@ string trim(string str);
 
 bool rmatch(string pattern, string str);
 
+string load_from_file(string fname);
+
 class Taskwindow : public Gtk::Window{
 public:
 
@@ -46,8 +48,6 @@ public:
   
   void set_text(string text);
   
-  void load_from_file(string fname);
-
 };
 
 class Userdata : public Taskwindow{
@@ -109,7 +109,7 @@ public:
   string value;
   Textview tv;
   
-  Instruction(string fname, initializer_list<string> labels = {"Dalej"}, float width = .6, float height = .8);
+  Instruction(string contents, initializer_list<string> labels = {"Dalej"}, float width = .6, float height = .8);
 
   ~Instruction();
 

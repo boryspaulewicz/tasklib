@@ -8,6 +8,7 @@ CXXFLAGS= -O3 -finline-functions -std=c++11 -O3 -I../tasklib/src `pkg-config gtk
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
 
 OBJS= Task.o Conditions.o Scenario.o Database.o Gui.o Media.o
+OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
@@ -20,12 +21,12 @@ UTILS= project guitest
 all: libtask.a $(UTILS) tasks tgzs
 
 clear:
-	rm -f libtask.a $(addprefix ./src/,$(OBJS)) $(UTILS) \
+	rm -f libtask.a $(OBJS) $(UTILS) \
 
 libtask.a: $(OBJS)
 	ar rv $@ $^
 
-$(OBJS):
+$(OBJS): $(OBJS:o=cpp) $(OBJS:o=hpp)
 	cd src; make
 
 project: project.cpp libtask.a

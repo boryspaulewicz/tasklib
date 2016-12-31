@@ -1,15 +1,22 @@
 #include "Media.hpp"
 
+void Media::white_on_black(){
+  bg = Color(Color::Black);
+  fg = Color(Color::White);
+}
+
 void Media::init(){
+  create(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
+
+  // cout << "Tworzê obiekt RenderWindow." << endl;
+  // window = new RenderWindow(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
+  setVerticalSyncEnabled(true);
+  setMouseCursorVisible(false);
+
   key_pressed.resize(Keyboard::Key::KeyCount);
   key_released.resize(Keyboard::Key::KeyCount);
   mouse_pressed.resize(Mouse::Button::ButtonCount);
   mouse_released.resize(Mouse::Button::ButtonCount);
-
-  cout << "Tworzê obiekt RenderWindow." << endl;
-  window = new RenderWindow(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
-  window->setVerticalSyncEnabled(true);
-  window->setMouseCursorVisible(false);
 
   string font_name = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
   if(!font.loadFromFile(font_name))
@@ -20,23 +27,17 @@ void Media::init(){
   text.setCharacterSize((float)height * 0.03);
 }
 
-void Media::close(){
-  if(window->isOpen())
-    window->close();
-  delete window;
-}
-
 sf::String Media::utf32(string s){
   return String::fromUtf8(s.begin(), s.end());
 }
 
 void Media::process_events(Event &event){
-  while(window->pollEvent(event)){
+  while(pollEvent(event)){
     switch(event.type){
     case Event::KeyPressed :
       key_pressed[event.key.code] = task_time();
       if(event.key.code == Keyboard::Escape)
-        window->close();
+        close();
       break;
     case Event::KeyReleased :
       key_released[event.key.code] = task_time();

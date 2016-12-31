@@ -50,10 +50,10 @@ void set_project_name(string project){
   Task::session_data["project"] = "'" + project + "'";
 }
 
-void get_user_data(string fname){
+void get_user_data(string instr){
   if(!Task::user_data_initialized){
     cout << "Pobieram dane osobowe" << endl;
-    Instruction in(fname);
+    Instruction in(instr);
     Userdata ud;
     for(auto d : ud.data)
       Task::session_data[d.first] = d.second;
@@ -133,6 +133,9 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
   if(getenv("TASKLIB_NODB") != nullptr)
     use_db = false;
 
+  if(getenv("TASKLIB_DEBUG") != nullptr)
+    debug = true;
+
   if(task_name == "")
     throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
@@ -170,9 +173,9 @@ void Task::run(string task_name, initializer_list<pair<string, vector<string> > 
     state = 0;
     state_start = trial_start = high_resolution_clock::now();
 
-    while(trial_code(state) && window->isOpen())
+    while(trial_code(state) && isOpen())
       process_events(event);
-    if(!window->isOpen())
+    if(!isOpen())
       break;
     
     if(use_db){

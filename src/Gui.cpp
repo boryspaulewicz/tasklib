@@ -49,16 +49,16 @@ void Textview::set_text(string text){
   get_buffer()->set_text(text);
 }
 
-void Textview::load_from_file(string fname){
-    ifstream f;
-    f.open(fname);
-    if(!f.good()){
-      throw(runtime_error("Nie udało się otworzyć pliku " + fname));
-      exit(1);
-    }
-    stringstream contents;
-    contents << f.rdbuf();
-    set_text(contents.str());
+string load_from_file(string fname){
+  ifstream f;
+  f.open(fname);
+  if(!f.good()){
+    throw(runtime_error("Nie udało się otworzyć pliku " + fname));
+    exit(1);
+  }
+  stringstream contents;
+  contents << f.rdbuf();
+  return contents.str();
 }
 
 void Userdata::button_pressed(){
@@ -167,8 +167,8 @@ Instruction::~Instruction(){
     delete b;
 }
   
-Instruction::Instruction(string fname, initializer_list<string> labels, float width, float height){
-  tv.load_from_file(fname);
+Instruction::Instruction(string contents, initializer_list<string> labels, float width, float height){
+  tv.set_text(contents);
 
   init();
   set_default_size(get_screen()->get_width() * width, get_screen()->get_height() * height);

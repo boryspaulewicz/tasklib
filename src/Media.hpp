@@ -11,7 +11,7 @@ using namespace chrono;
 
 using ms = long int;
 
-class Media{
+class Media : public RenderWindow{
 
 private:
 
@@ -21,9 +21,9 @@ public:
 
   void init();
 
-  void close();
-
-  RenderWindow* window;
+  Color bg, fg;
+  void white_on_black();
+  
   Event event;
   int width, height;
   RectangleShape rect;
