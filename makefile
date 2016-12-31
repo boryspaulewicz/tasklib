@@ -36,8 +36,6 @@ guitest: guitest.cpp libtask.a
 tasks: $(TASKS)
 	$(foreach var,$^, cd ../$(var)/; make)
 
-## git commit -a -m "makefile commit" || true; \
-
 tgzs: $(tgz)
 	$(foreach var,$^, \
 	git commit -a -v || true; \
