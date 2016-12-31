@@ -62,8 +62,9 @@ void get_user_data(string fname){
 }
 
 string get_random_condition(string task_name, vector<string> conditions){
+  // liczebności również warunków, które jeszcze nie wystąpiły w bazie
+  // (wtedy = 0)
   map<string, int> counts;
-  // liczebności również warunków, które jeszcze nie wystąpiły w bazie (wtedy = 0)
   for(auto c : conditions)
     counts[c] = 0;
   auto res = Task::db.query("select cnd, count(*) from session where task = '" + task_name +
@@ -82,7 +83,7 @@ string get_random_condition(string task_name, vector<string> conditions){
     Chooseitem ci(conditions, "Wybór administratora");
     chosen = ci.value;
   }else{
-    // Pierwszy z najmniej reprezentowanych
+    // Zwracamy pierwszy z najmniej reprezentowanych
     int min_count = counts[conditions[0]];
     int j = 0;
     for(int i = 1; i < counts.size(); i++){
@@ -100,7 +101,6 @@ string get_random_condition(string task_name, vector<string> conditions){
 }
 
 void Task::register_session(){
-  // task, name, age, gender, opcjonalne: project, cnd, stage, tag, project_sha, lib_sha
   if(user_data_initialized){
     cout << "Rejestruję sesję" << endl;
     db.execute(db.insert_statement("session", session_data));
@@ -130,19 +130,14 @@ void Task::send_data(string task_name, map<string, string> d){
 
 void Task::run(string task_name, initializer_list<pair<string, vector<string> > > levels, unsigned int b, unsigned int n, unsigned int nof_trials_){
 
+  if(getenv("TASKLIB_NODB") != nullptr)
+    use_db = false;
+
   if(task_name == "")
     throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
 
-  if(getenv("TASKLIB_NODB") != nullptr)
-    use_db = false;
-  
   get_user_data();
-  if(getenv("TASKLIB") == nullptr){
-    cout << "Ostrzeżenie: zmienna TASKLIB niezdefiniowana" << endl;
-  }else{
-    cout << "Używam wartości zmiennej TASKLIB" << endl;
-  }
   get_sha_data();
   if(use_db){
     db.connect();
