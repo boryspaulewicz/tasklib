@@ -89,7 +89,7 @@ void Userdata::button_pressed(){
     msg.run();
     return;
   }
-  if(!rmatch("^ *[1-9][0-9] *$", age.get_text())){
+  if(!rmatch("^ *[0-9][0-9] *$", age.get_text())){
     MessageDialog msg(*this, "Błędna wartość w polu wiek: " + age.get_text());
     msg.run();
     return;
@@ -167,7 +167,7 @@ Instruction::~Instruction(){
     delete b;
 }
   
-Instruction::Instruction(string contents, initializer_list<string> labels, float width, float height){
+Instruction::Instruction(string contents, vector<string> labels, float width, float height){
   tv.set_text(contents);
 
   init();

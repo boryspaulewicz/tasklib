@@ -128,8 +128,9 @@ void Task::send_data(string task_name, map<string, string> d){
   db.execute(db.insert_statement(task_name + "_data", d));
 }
 
-void Task::run(string task_name, initializer_list<pair<string, vector<string> > > levels, unsigned int b, unsigned int n, unsigned int nof_trials_){
-
+void Task::run(string task_name, vector<pair<string, vector<string> > > levels, unsigned int b_, unsigned int n_, unsigned int nof_trials_){
+  b = b_; n = n_, design = levels;
+    
   if(getenv("TASKLIB_NODB") != nullptr)
     use_db = false;
 

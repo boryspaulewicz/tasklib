@@ -109,7 +109,7 @@ public:
   string value;
   Textview tv;
   
-  Instruction(string contents, initializer_list<string> labels = {"Dalej"}, float width = .6, float height = .8);
+  Instruction(string contents, vector<string> labels = {"Dalej"}, float width = .6, float height = .8);
 
   ~Instruction();
 

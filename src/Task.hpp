@@ -29,11 +29,12 @@ using namespace sf;
 #include "Database.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
-
 class Task :public Media{
 
 protected:
 
+  vector<pair<string, vector<string> > > design;
+  int b, n;
   unique_ptr<Conditions> cs;
   unique_ptr<Scenario> scen;
   unsigned int nof_trials;
@@ -57,6 +58,12 @@ protected:
     trial_data[name] = to_string(value);
   }
 
+  template<typename T>
+  void data(vector<pair<string, T> > values){
+    for(auto& v : values)
+    trial_data[v.first] = to_string(v.second);
+  }
+  
   static void send_data(string task_name, map<string, string> d);
   
   inline string cnd(string f){ return cs->get(f, scen->get(current_trial)); }
@@ -78,7 +85,7 @@ protected:
 
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
-  void run(string task_name, initializer_list<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
+  void run(string task_name, vector<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials_ = 0);
 
   virtual bool trial_code(int state) = 0;

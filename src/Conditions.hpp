@@ -21,7 +21,7 @@ public:
   int nof_cnds;
   vector<string> names;
   
-  Conditions(initializer_list<pair<string, vector<string> > > design);
+  Conditions(vector<pair<string, vector<string> > > design);
   inline string get(string f, int c){
     return conditions[f].at(c);
   }
