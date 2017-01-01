@@ -113,6 +113,10 @@ void Task::register_session(){
   }
 }
 
+void Task::mark_session_finished(){
+  db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
+}
+
 void Task::send_data(string task_name, map<string, string> d){
   if(d["trial"] == "0"){
     string q("CREATE TABLE IF NOT EXISTS " + task_name + "_data "
@@ -128,8 +132,8 @@ void Task::send_data(string task_name, map<string, string> d){
   db.execute(db.insert_statement(task_name + "_data", d));
 }
 
-void Task::run(string task_name, vector<pair<string, vector<string> > > levels, unsigned int b_, unsigned int n_, unsigned int nof_trials_){
-  b = b_; n = n_, design = levels;
+void Task::init(string task_name_, vector<pair<string, vector<string> > > design_, unsigned int b_, unsigned int n_, unsigned int nof_trials_){
+  task_name = task_name_; design = design_; b = b_; n = n_; nof_trials = nof_trials_;
     
   if(getenv("TASKLIB_NODB") != nullptr)
     use_db = false;
@@ -141,25 +145,33 @@ void Task::run(string task_name, vector<pair<string, vector<string> > > levels, 
     throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
 
+  send_data_thread = nullptr;
+  
+  was_initialized = true;
+}
+
+void Task::run(){
+  if(!was_initialized)
+    throw(runtime_error("Wywołano funkcję run, ale zadanie nie zostało zainicjalizowane"));
+
+  cs = unique_ptr<Conditions>(new Conditions(design));
+  srand(time(NULL));
+  scen = unique_ptr<Scenario>(new Scenario(cs->nof_cnds, b, n));
+  if(nof_trials == 0){
+    nof_trials = scen->size();
+  }else if(nof_trials > scen->size()){
+    throw(std::runtime_error("Liczba prób większa niż długość scenariusza"));
+  }
+
+  cout << "Długość zadania: " << nof_trials  << endl;
+  cs->print();
+
   get_user_data();
   get_sha_data();
   if(use_db){
     db.connect();
     register_session();
   }
-    
-  cs = unique_ptr<Conditions>(new Conditions(levels));
-  srand(time(NULL));
-  scen = unique_ptr<Scenario>(new Scenario(cs->nof_cnds, b, n));
-  if(nof_trials_ == 0){
-    nof_trials = scen->size();
-  }else if(nof_trials_ > scen->size()){
-    throw(std::runtime_error("Liczba prób większa niż długość scenariusza"));
-  }else{
-    nof_trials = nof_trials_;
-  }
-  cout << "Długość zadania: " << nof_trials  << endl;
-  cs->print();
     
   Media::init();
 
@@ -171,9 +183,11 @@ void Task::run(string task_name, vector<pair<string, vector<string> > > levels, 
     trial_data["trial"] = to_string(current_trial);
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
-    state = 0;
-    state_start = trial_start = high_resolution_clock::now();
 
+    state = 0;
+    trial_start = high_resolution_clock::now();
+    state_start = trial_start;
+    
     while((trial_code(state) != OVER) && isOpen())
       process_events(event);
     if(!isOpen())
@@ -194,8 +208,4 @@ void Task::run(string task_name, vector<pair<string, vector<string> > > levels, 
   }
 
   Media::close();
-}
-
-void Task::mark_session_finished(){
-  db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
 }

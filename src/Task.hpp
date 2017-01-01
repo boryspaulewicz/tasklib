@@ -37,9 +37,12 @@ protected:
   
   vector<pair<string, vector<string> > > design;
   int b, n;
+  unsigned int nof_trials;
+  string task_name;
+  bool was_initialized = false;
+  
   unique_ptr<Conditions> cs;
   unique_ptr<Scenario> scen;
-  unsigned int nof_trials;
   unsigned int current_trial;
 
   map<string, string> trial_data;
@@ -87,8 +90,10 @@ protected:
 
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
-  void run(string task_name, vector<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
-           unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials_ = 0);
+  void init(string task_name, vector<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
+            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials_ = 0);
+  
+  void run();
 
   virtual TRIAL_STATUS trial_code(int state) = 0;
 };
