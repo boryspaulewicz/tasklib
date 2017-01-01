@@ -18,11 +18,14 @@ private:
 public:
 
   Scenario(unsigned int k_, unsigned int b_, unsigned int n_);
+
+  void permute();
+
   inline unsigned int get(unsigned int i){
     return scen.at(i);
   }
+
   unsigned int size();
-  void permute();
 };
 
 #endif
