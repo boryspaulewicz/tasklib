@@ -28,6 +28,9 @@ void Media::init(){
   width = VideoMode().getDesktopMode().width; 
   height = VideoMode().getDesktopMode().height;
   text.setCharacterSize((float)height * 0.03);
+
+  state_durations.clear();
+  state_durations.resize(100, -1);
 }
 
 sf::String Media::utf32(string s){

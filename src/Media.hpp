@@ -10,15 +10,23 @@ using namespace sf;
 using namespace chrono;
 
 using ms = long int;
+using tp = high_resolution_clock::time_point;
 
 class Media : public RenderWindow{
 
-private:
+protected:
 
+  int state;
+  tp state_start, trial_start, task_start;
+  vector<ms> state_durations;
+  
   vector<ms> key_pressed, key_released, mouse_pressed, mouse_released;
   
 public:
 
+  bool debug = false;
+  bool measure_state_durations = false;
+  
   void init();
 
   Color bg, fg;
@@ -53,11 +61,12 @@ public:
 
   sf::String utf32(string s);
 
-  int state;
-  using tp = high_resolution_clock::time_point;
-  tp state_start, trial_start, task_start;
-
   inline void set_state(int s){
+    if(measure_state_durations){
+      state_durations[state] =
+        duration_cast<std::chrono::microseconds>(high_resolution_clock::now() -
+                                                 state_start).count();
+    }
     state = s;
     state_start = high_resolution_clock::now();
   }

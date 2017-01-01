@@ -29,7 +29,7 @@ using namespace sf;
 #include "Database.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
-class Task :public Media{
+class Task : protected Media{
 
 protected:
 
@@ -74,8 +74,6 @@ protected:
   inline string cnd(string f){ return cs->get(f, scen->get(current_trial)); }
 
  public:
-
-  bool debug = false;
 
   inline void display();
 

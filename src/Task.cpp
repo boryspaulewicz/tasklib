@@ -141,6 +141,9 @@ void Task::init(string task_name_, vector<pair<string, vector<string> > > design
   if(getenv("TASKLIB_DEBUG") != nullptr)
     debug = true;
 
+  if(getenv("TASKLIB_STATEDUR") != nullptr)
+    measure_state_durations = true;
+
   if(task_name == "")
     throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
@@ -197,6 +200,13 @@ void Task::run(){
 
     if(!isOpen())
       break;
+
+    if(measure_state_durations)
+      for(auto i = 0; i < state_durations.size(); i++){
+        if(state_durations[i] < 0)
+          break;
+        cout << "state " << i << ": " << to_string(state_durations[i] / 1000.0) + " ms" << endl;
+      }
   }
     
   if(use_db){

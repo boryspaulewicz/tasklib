@@ -14,7 +14,7 @@ TASKS= test $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
 
 .PHONY: $(TASKS) tgzs
 
-UTILS= project guitest
+UTILS= project tests
 
 all: libtask.a $(UTILS) tasks tgzs
 
@@ -27,7 +27,7 @@ libtask.a: $(OBJS:o=cpp) $(OBJS:o=hpp)
 
 project: project.cpp libtask.a
 
-guitest: guitest.cpp libtask.a
+tests: tests.cpp libtask.a
 
 tasks: $(TASKS)
 	$(foreach var,$^, cd ../$(var)/; make)
