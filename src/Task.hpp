@@ -33,6 +33,8 @@ class Task :public Media{
 
 protected:
 
+  enum TRIAL_STATUS{OVER, NOT_OVER};
+  
   vector<pair<string, vector<string> > > design;
   int b, n;
   unique_ptr<Conditions> cs;
@@ -73,7 +75,7 @@ protected:
   bool debug = false;
 
   inline void display();
-  
+
   bool use_db = true;
   static Database db;
 
@@ -88,7 +90,7 @@ protected:
   void run(string task_name, vector<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials_ = 0);
 
-  virtual bool trial_code(int state) = 0;
+  virtual TRIAL_STATUS trial_code(int state) = 0;
 };
 
 void Task::display(){

@@ -174,7 +174,7 @@ void Task::run(string task_name, vector<pair<string, vector<string> > > levels, 
     state = 0;
     state_start = trial_start = high_resolution_clock::now();
 
-    while(trial_code(state) && isOpen())
+    while((trial_code(state) != OVER) && isOpen())
       process_events(event);
     if(!isOpen())
       break;
