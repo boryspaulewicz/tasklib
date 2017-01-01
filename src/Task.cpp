@@ -145,8 +145,6 @@ void Task::init(string task_name_, vector<pair<string, vector<string> > > design
     throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
 
-  send_data_thread = nullptr;
-  
   was_initialized = true;
 }
 
@@ -176,7 +174,7 @@ void Task::run(){
 
   cout << "Rozpoczynam pętlę prób zadania" << endl;
   task_start = high_resolution_clock::now();
-  for(current_trial = 0; current_trial < nof_trials; current_trial++){
+  for(current_trial = 0; !task_is_finished(); current_trial++){
 
     trial_data.clear();
     trial_data["trial"] = to_string(current_trial);
@@ -189,19 +187,20 @@ void Task::run(){
     
     while((trial_code(state) != OVER) && isOpen())
       process_events(event);
-    if(!isOpen())
-      break;
     
     if(use_db){
-      if(send_data_thread != nullptr)
+      if(current_trial > 0)
         send_data_thread->join();
-      send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
+      if(isOpen())
+        send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
     }
+
+    if(!isOpen())
+      break;
   }
     
   if(use_db){
-    send_data_thread->join();
-    if(current_trial == nof_trials)
+    if(task_is_finished())
       mark_session_finished();
     db.disconnect();
   }

@@ -31,9 +31,9 @@ string load_from_file(string fname);
 
 class Taskwindow : public Gtk::Window{
 public:
-
-  Frame frame;
   
+  Frame frame;
+
   void init();
 
   void run();
@@ -102,12 +102,12 @@ class Instruction : public Taskwindow{ // Gtk::Window{
   
   VBox vbox;
   HBox hbox;
+  Textview tv;
   vector<VButton*> buttons;
   
 public:
 
   string value;
-  Textview tv;
   
   Instruction(string contents, vector<string> labels = {"Dalej"}, float width = .6, float height = .8);
 

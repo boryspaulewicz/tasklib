@@ -96,6 +96,11 @@ protected:
   void run();
 
   virtual TRIAL_STATUS trial_code(int state) = 0;
+
+  virtual bool task_is_finished(){
+    return current_trial == nof_trials;
+  }
+
 };
 
 void Task::display(){
@@ -104,7 +109,7 @@ void Task::display(){
     for(auto& f : cs->factors)
       condition += f.first + ": " + cnd(f.first);
     Text text;
-    text.setFont(font); text.setCharacterSize((float)height * 0.02);
+    text.setFont(font); text.setCharacterSize((float)height * 0.03);
     text.setString("state: " + to_string(state) + " condition: " + condition);
     text.setPosition(Vector2f(0, 0));
     draw(text);
