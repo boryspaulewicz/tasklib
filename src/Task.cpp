@@ -166,7 +166,6 @@ void Task::run(){
   cout << "Długość zadania: " << nof_trials  << endl;
   cs->print();
 
-  get_user_data();
   get_sha_data();
   if(use_db){
     db.connect();

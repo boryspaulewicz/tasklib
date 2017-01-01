@@ -86,7 +86,7 @@ protected:
   
   friend void set_project_name(string project);
 
-  friend void get_user_data(string fname = "./userdata.utxt");
+  friend void get_user_data(string instruction);
 
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
