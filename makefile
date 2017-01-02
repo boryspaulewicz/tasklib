@@ -10,7 +10,7 @@ OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
-TASKS= test $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
+TASKS= posner $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
 
 .PHONY: $(TASKS) tgzs
 

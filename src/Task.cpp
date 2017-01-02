@@ -100,6 +100,10 @@ string get_random_condition(string task_name, vector<string> conditions){
   return chosen;
 }
 
+string Task::get_session_data(string name){
+  return session_data[name];
+}
+
 void Task::register_session(){
   if(user_data_initialized){
     cout << "Rejestruję sesję" << endl;
@@ -111,6 +115,12 @@ void Task::register_session(){
   }else{
     throw(runtime_error("Brak unikalnego identyfikatora, nie mogę zarejestrować tej sesji."));
   }
+}
+
+bool Task::task_is_finished(){
+  if(!finished)
+    finished = (current_trial == nof_trials) || ((max_task_time > 0) && (task_time() >= max_task_time));
+  return finished;
 }
 
 void Task::mark_session_finished(){
@@ -132,8 +142,12 @@ void Task::send_data(string task_name, map<string, string> d){
   db.execute(db.insert_statement(task_name + "_data", d));
 }
 
-void Task::init(string task_name_, vector<pair<string, vector<string> > > design_, unsigned int b_, unsigned int n_, unsigned int nof_trials_){
-  task_name = task_name_; design = design_; b = b_; n = n_; nof_trials = nof_trials_;
+void Task::init(string task_name_, vector<pair<string, vector<string> > > design_,
+                unsigned int b_, unsigned int n_, unsigned int nof_trials_,
+                unsigned int max_task_time_){
+  task_name = task_name_; design = design_;
+  b = b_; n = n_; nof_trials = nof_trials_;
+  max_task_time = max_task_time_;
     
   if(getenv("TASKLIB_NODB") != nullptr)
     use_db = false;
@@ -141,18 +155,16 @@ void Task::init(string task_name_, vector<pair<string, vector<string> > > design
   if(getenv("TASKLIB_DEBUG") != nullptr)
     debug = true;
 
-  if(getenv("TASKLIB_STATEDUR") != nullptr)
-    measure_state_durations = true;
-
   if(task_name == "")
     throw(runtime_error("Nie podano nazwy zadania"));
   session_data["task"] = "'" + task_name + "'";
 
-  was_initialized = true;
+  initialized = true;
+  finished = false;
 }
 
 void Task::run(){
-  if(!was_initialized)
+  if(!initialized)
     throw(runtime_error("Wywołano funkcję run, ale zadanie nie zostało zainicjalizowane"));
 
   cs = unique_ptr<Conditions>(new Conditions(design));
@@ -184,6 +196,9 @@ void Task::run(){
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
 
+    if(measure_state_durations)
+      state_durations.clear();
+    
     state = 0;
     trial_start = high_resolution_clock::now();
     state_start = trial_start;
@@ -196,24 +211,35 @@ void Task::run(){
         send_data_thread->join();
       if(isOpen())
         send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
+    }else{
+      cout << "Dane z próby: ";
+      for(auto d : trial_data){
+        cout << d.first << ": " << d.second << " "; 
+      }
+      cout << endl;
+    }
+
+    if(measure_state_durations){
+      cout << "Czas trwania stanów (mu) ";
+      for(auto& d : state_durations)
+        cout << to_string(d.first) << ": " << to_string(d.second) + " ";
+      cout << endl;
     }
 
     if(!isOpen())
       break;
-
-    if(measure_state_durations)
-      for(auto i = 0; i < state_durations.size(); i++){
-        if(state_durations[i] < 0)
-          break;
-        cout << "state " << i << ": " << to_string(state_durations[i] / 1000.0) + " ms" << endl;
-      }
   }
+
+  if(isOpen())
+    close();
     
+  cout << "Zadanie trwało " << floor(task_time() / 60000) << " minut." << endl;
+
   if(use_db){
-    if(task_is_finished())
+    if(task_is_finished()){
+      send_data_thread->join();
       mark_session_finished();
+    }
     db.disconnect();
   }
-
-  Media::close();
 }

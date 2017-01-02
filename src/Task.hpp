@@ -10,6 +10,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<iostream>
+#include<iomanip>
 #include<fstream>
 #include<vector>
 #include<stdexcept>
@@ -39,7 +40,7 @@ protected:
   int b, n;
   unsigned int nof_trials;
   string task_name;
-  bool was_initialized = false;
+  bool initialized = false, finished = false;
   
   unique_ptr<Conditions> cs;
   unique_ptr<Scenario> scen;
@@ -88,16 +89,18 @@ protected:
 
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
+  string get_session_data(string name);
+  
+  unsigned int max_task_time;
+
   void init(string task_name, vector<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
-            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials_ = 0);
+            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials = 0, unsigned int max_task_time = 0);
   
   void run();
 
   virtual TRIAL_STATUS trial_code(int state) = 0;
 
-  virtual bool task_is_finished(){
-    return current_trial == nof_trials;
-  }
+  virtual bool task_is_finished();
 
 };
 
@@ -107,8 +110,9 @@ void Task::display(){
     for(auto& f : cs->factors)
       condition += f.first + ": " + cnd(f.first);
     Text text;
-    text.setFont(font); text.setCharacterSize((float)height * 0.03);
+    text.setFont(font); text.setCharacterSize((float)height * 0.02);
     text.setString("state: " + to_string(state) + " condition: " + condition);
+    text.setColor(Color::Green);
     text.setPosition(Vector2f(0, 0));
     draw(text);
   }

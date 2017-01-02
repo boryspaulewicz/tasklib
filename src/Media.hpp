@@ -18,28 +18,44 @@ protected:
 
   int state;
   tp state_start, trial_start, task_start;
-  vector<ms> state_durations;
+  map<int, ms> state_durations;
   
+  ms some_key_pressed;
   vector<ms> key_pressed, key_released, mouse_pressed, mouse_released;
   
+  bool window_ready;
+  void onCreate(){
+    window_ready = true;
+  }
+
 public:
 
   bool debug = false;
-  bool measure_state_durations = false;
-  
+  bool measure_state_durations = true;
+
   void init();
 
-  Color bg, fg;
+  Color bg = Color::Black, fg = Color::White;
   void white_on_black();
   
   Event event;
-  int width, height;
   RectangleShape rect;
   Font font;
   Text text;
 
+  int width, height;
+
+  Media(){
+    width = VideoMode().getDesktopMode().width; 
+    height = VideoMode().getDesktopMode().height;
+  }
+  
   void process_events(Event &event);
 
+  ms some_keyp(){
+    return some_key_pressed;
+  }
+  
   ms keyp(int key){
     return key_pressed[key];
   }
@@ -71,7 +87,7 @@ public:
     state_start = high_resolution_clock::now();
   }
 
-  inline ms state_time(){
+  inline ms state_time(ms t = 0){
     return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() -
                                                     state_start).count();  
   }
@@ -91,7 +107,7 @@ public:
 template<class T>
 void Media::center(T& obj){
   auto bounds = obj.getLocalBounds();
-  obj.setOrigin(bounds.width / 2, bounds.height / 2);
+  obj.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
   obj.setPosition(width / 2, height / 2);
 }
 

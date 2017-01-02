@@ -6,12 +6,20 @@ void Media::white_on_black(){
 }
 
 void Media::init(){
-  create(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
+  if(isOpen())
+    close();
 
+  window_ready = false;
+  create(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
+  RenderTarget::initialize();
+  
   setVerticalSyncEnabled(true);
   setMouseCursorVisible(false);
+  
+  white_on_black();
 
   // Inaczej zostaj± dane z poprzedniego wykonania pêtli prób
+  some_key_pressed = 0;
   key_pressed.clear();
   key_released.clear();
   mouse_pressed.clear();
@@ -25,12 +33,11 @@ void Media::init(){
   if(!font.loadFromFile(font_name))
     throw(runtime_error("Nie uda³o siê za³adowaæ domy¶lnej czcionki: " + font_name));
   text.setFont(font);
-  width = VideoMode().getDesktopMode().width; 
-  height = VideoMode().getDesktopMode().height;
   text.setCharacterSize((float)height * 0.03);
 
   state_durations.clear();
-  state_durations.resize(100, -1);
+
+  while(!window_ready){}
 }
 
 sf::String Media::utf32(string s){
@@ -41,7 +48,8 @@ void Media::process_events(Event &event){
   while(pollEvent(event)){
     switch(event.type){
     case Event::KeyPressed :
-      key_pressed[event.key.code] = task_time();
+      some_key_pressed = task_time();
+      key_pressed[event.key.code] = some_key_pressed;
       if(event.key.code == Keyboard::Escape)
         close();
       break;
