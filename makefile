@@ -5,7 +5,7 @@ CXXFLAGS= -O3 -finline-functions -std=c++11 -O3 -I../tasklib/src `pkg-config gtk
 
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
 
-OBJS= Task.o Conditions.o Scenario.o Database.o Gui.o Media.o
+OBJS= Task.o Conditions.o Scenario.o Database.o Gui.o Media.o Datasaver.o
 OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS

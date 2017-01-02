@@ -127,21 +127,6 @@ void Task::mark_session_finished(){
   db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
 }
 
-void Task::send_data(string task_name, map<string, string> d){
-  if(d["trial"] == "0"){
-    string q("CREATE TABLE IF NOT EXISTS " + task_name + "_data "
-             "(timestamp TIMESTAMP, session_id INT(11) NOT NULL, ");
-    for(auto& x : d){
-      q += x.first + " " + (x.second[0] == '\'' ? "VARCHAR(50), " : "DOUBLE, ");
-    }
-    q += "KEY session_id (session_id), FOREIGN KEY (session_id) REFERENCES session (session_id)"
-      " ON DELETE CASCADE ON UPDATE CASCADE);";
-    db.execute(q);
-  }
-  d["session_id"] = to_string(session_id);
-  db.execute(db.insert_statement(task_name + "_data", d));
-}
-
 void Task::init(string task_name_, vector<pair<string, vector<string> > > design_,
                 unsigned int b_, unsigned int n_, unsigned int nof_trials_,
                 unsigned int max_task_time_){
@@ -183,7 +168,6 @@ void Task::run(){
   if(use_db){
     db.connect();
     register_session();
-    send_data_thread = nullptr;
   }
     
   Media::init();
@@ -208,6 +192,9 @@ void Task::run(){
     while((trial_code(state) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start_ms))
       process_events(event);
     
+    if(keyp(KEYESCAPE) > task_start_ms)
+      break;
+
     if(measure_state_durations){
       cout << "Czas trwania stanów (mu) ";
       for(auto& d : state_durations)
@@ -215,26 +202,17 @@ void Task::run(){
       cout << endl;
     }
 
-    if(keyp(KEYESCAPE) > task_start_ms)
-      break;
-
-    if(use_db){
-      if(send_data_thread != nullptr)
-        send_data_thread->join();
-      send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
-    }
-
+    if(use_db)
+      unique_ptr<Datasaver> ds = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
   }
 
   if(use_db){
-    if(send_data_thread != nullptr)
-      send_data_thread->join();
     if(task_is_finished())
       mark_session_finished();
     db.disconnect();
   }
 
-  close();
+  Media::close();
   
   cout << "Zadanie trwało " << floor(task_time() / 60000) << " minut." << endl;
 }

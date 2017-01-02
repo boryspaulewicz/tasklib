@@ -28,6 +28,7 @@ using namespace sf;
 #include "Conditions.hpp"
 #include "Scenario.hpp"
 #include "Database.hpp"
+#include "Datasaver.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
 class Task : protected Media{
@@ -46,31 +47,20 @@ protected:
   unique_ptr<Scenario> scen;
   unsigned int current_trial;
 
-  map<string, string> trial_data;
-
-  unique_ptr<thread>send_data_thread;
-  
-  static map<string, string> session_data;
   static int session_id;
+  static map<string, string> session_data;
   static bool user_data_initialized;
   static bool sha_data_initialized;
+  map<string, string> trial_data;
 
   void register_session();
 
   void mark_session_finished();
 
   template<typename T>
-  void data(string name, T value){
+  void set_trial_data(string name, T value){
     trial_data[name] = to_string(value);
   }
-
-  template<typename T>
-  void data(vector<pair<string, T> > values){
-    for(auto& v : values)
-    trial_data[v.first] = to_string(v.second);
-  }
-  
-  static void send_data(string task_name, map<string, string> d);
   
   inline string cnd(string f){ return cs->get(f, scen->get(current_trial)); }
 

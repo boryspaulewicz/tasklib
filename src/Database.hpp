@@ -2,9 +2,13 @@
 
 // pakiet libmysqlcppconn-dev
 
+#ifndef DATABASE
+#define DATABASE
+
 #include <stdlib.h>
 #include <iostream>
 #include <sstream>
+#include <mutex>
 #include "mysql_connection.h"
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -15,6 +19,8 @@ using namespace sql;
 
 class Database{
 private:
+
+  static mutex db_mutex;
 
   Driver *driver; // tylko pobieramy wskaźnik do istniejącego wcześniej drivera
   unique_ptr<Connection> con;
@@ -35,3 +41,5 @@ public:
 
   ~Database();
 };
+
+#endif

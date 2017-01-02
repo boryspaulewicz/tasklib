@@ -5,6 +5,8 @@
 
 string Database::password = "";
 
+mutex Database::db_mutex;
+
 void Database::exception(SQLException &e){
   cout << "# ERR: SQLException in " << __FILE__;
   cout << "(" << __FUNCTION__ << ") on line "
@@ -16,6 +18,7 @@ void Database::exception(SQLException &e){
 }
 
 unique_ptr<ResultSet> Database::query(string q){
+  // db_mutex.lock();
   try{
     if(con == nullptr || con->isClosed()){
       connect();
@@ -25,9 +28,11 @@ unique_ptr<ResultSet> Database::query(string q){
   }catch(SQLException &e){
     exception(e);
   }
+  // db_mutex.unlock();
 }
 
 void Database::execute(string q){
+  // db_mutex.lock();
   try{
     if(con == nullptr || con->isClosed()){
       connect();
@@ -37,6 +42,7 @@ void Database::execute(string q){
   }catch(SQLException &e){
     exception(e);
   }
+  // db_mutex.unlock();
 }
 
 string Database::insert_statement(string table, map<string, string> &d){
@@ -53,6 +59,7 @@ string Database::insert_statement(string table, map<string, string> &d){
 }
 
 void Database::connect(){
+  // db_mutex.lock();
   if(!(con == nullptr || con->isClosed()))
     return;
 
@@ -78,14 +85,17 @@ void Database::connect(){
   }catch(SQLException &e){
     exception(e);
   }
+  // db_mutex.unlock();
 }
 
 void Database::disconnect(){
+  // db_mutex.lock();
   if(!(con == nullptr || con->isClosed())){
     con->close();
     con = nullptr;
     cout << "Zamykam ewentualne połączenie z bazą danych" << endl;
   }
+  // db_mutex.unlock();
 }
 
 Database::~Database(){

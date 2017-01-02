@@ -4,6 +4,7 @@
 #include<vector>
 #include<iostream>
 #include<chrono>
+#include<memory>
 #include<SFML/Graphics.hpp>
 using namespace std;
 using namespace sf;
@@ -14,6 +15,10 @@ using tp = high_resolution_clock::time_point;
 
 class Media : public RenderWindow{
 
+private:
+
+  unique_ptr<RenderWindow> win;
+
 protected:
 
   int state;
@@ -23,18 +28,21 @@ protected:
   ms some_key_pressed;
   vector<ms> key_pressed, key_released, mouse_pressed, mouse_released;
   
-  bool window_ready;
-  void onCreate(){
-    window_ready = true;
-  }
-
 public:
 
   bool debug = false;
   bool measure_state_durations = true;
 
-  void init();
-
+  void display(){
+    win->display();
+  }
+  void clear(const Color& color = Color(0, 0, 0, 255)){
+    win->clear(color);
+  }
+  void draw(const Drawable &drawable){
+    win->draw(drawable);
+  }
+  
   Color bg = Color::Black, fg = Color::White;
   void white_on_black();
   
@@ -45,10 +53,10 @@ public:
 
   int width, height;
 
-  Media(){
-    width = VideoMode().getDesktopMode().width; 
-    height = VideoMode().getDesktopMode().height;
-  }
+  void init();
+  void close();
+  
+  Media();
   
   void process_events(Event &event);
 

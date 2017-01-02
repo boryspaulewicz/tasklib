@@ -6,12 +6,12 @@ void Media::white_on_black(){
 }
 
 void Media::init(){
-  window_ready = false;
-  create(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
-  RenderTarget::initialize();
-  
-  setVerticalSyncEnabled(true);
-  setMouseCursorVisible(false);
+  win = unique_ptr<RenderWindow>(new RenderWindow(VideoMode().getDesktopMode(), "Task", Style::Fullscreen));
+  win->setVerticalSyncEnabled(true);
+  win->setMouseCursorVisible(false);
+  win->clear();
+  win->display();
+  while(win->pollEvent(event)){}
   
   white_on_black();
 
@@ -33,14 +33,16 @@ void Media::init(){
   text.setCharacterSize((float)height * 0.03);
 
   state_durations.clear();
+}
 
-  // while(!window_ready){}
-  // // pierwsza ramka czasem siê nie pokazuje, gdy ten sam obiekt
-  // // ponownie otwiera okno, albo, gdy obiekt jest nowy, jest obni¿ona
-  // while(pollEvent(event)){}
-  // clear();
-  // display(); 
-  // while(pollEvent(event)){}
+void Media::close(){
+  win->close();
+  win = nullptr;
+}
+
+Media::Media(){
+  width = VideoMode().getDesktopMode().width; 
+  height = VideoMode().getDesktopMode().height;
 }
 
 sf::String Media::utf32(string s){
@@ -48,7 +50,7 @@ sf::String Media::utf32(string s){
 }
 
 void Media::process_events(Event &event){
-  while(pollEvent(event)){
+  while(win->pollEvent(event)){
     switch(event.type){
     case Event::KeyPressed :
       some_key_pressed = task_time();
