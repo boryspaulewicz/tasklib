@@ -34,13 +34,13 @@ void Media::init(){
 
   state_durations.clear();
 
-  while(!window_ready){}
-  // pierwsza ramka czasem siê nie pokazuje, gdy ten sam obiekt
-  // ponownie otwiera okno, albo, gdy obiekt jest nowy, jest obni¿ona
-  while(pollEvent(event)){}
-  clear();
-  display(); 
-  while(pollEvent(event)){}
+  // while(!window_ready){}
+  // // pierwsza ramka czasem siê nie pokazuje, gdy ten sam obiekt
+  // // ponownie otwiera okno, albo, gdy obiekt jest nowy, jest obni¿ona
+  // while(pollEvent(event)){}
+  // clear();
+  // display(); 
+  // while(pollEvent(event)){}
 }
 
 sf::String Media::utf32(string s){

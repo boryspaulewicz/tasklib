@@ -183,6 +183,7 @@ void Task::run(){
   if(use_db){
     db.connect();
     register_session();
+    send_data_thread = nullptr;
   }
     
   Media::init();
@@ -206,22 +207,7 @@ void Task::run(){
     
     while((trial_code(state) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start_ms))
       process_events(event);
-    close();
-    if(keyp(KEYESCAPE) > task_start_ms)
-      break;
     
-    if(use_db){
-      if(current_trial > 0)
-        send_data_thread->join();
-        send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
-    }else{
-      cout << "Dane z próby: ";
-      for(auto d : trial_data){
-        cout << d.first << ": " << d.second << " "; 
-      }
-      cout << endl;
-    }
-
     if(measure_state_durations){
       cout << "Czas trwania stanów (mu) ";
       for(auto& d : state_durations)
@@ -229,15 +215,25 @@ void Task::run(){
       cout << endl;
     }
 
+    if(keyp(KEYESCAPE) > task_start_ms)
+      break;
+
+    if(use_db && (current_trial > 0)){
+      send_data_thread->join();
+      send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
+    }
+
   }
-    
-  cout << "Zadanie trwało " << floor(task_time() / 60000) << " minut." << endl;
 
   if(use_db){
-    if(task_is_finished()){
+    if(send_data_thread != nullptr)
       send_data_thread->join();
+    if(task_is_finished())
       mark_session_finished();
-    }
     db.disconnect();
   }
+
+  close();
+  
+  cout << "Zadanie trwało " << floor(task_time() / 60000) << " minut." << endl;
 }
