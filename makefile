@@ -10,13 +10,13 @@ OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
-TASKS= posner $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
+TASKS:= $(shell ls -d ../* | sed /tasklib/d) $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
 
-.PHONY: $(TASKS) tgzs
+.PHONY: $(TASKS) $(tgz)
 
 UTILS= project tests
 
-all: libtask.a $(UTILS) tasks tgzs
+all: libtask.a $(UTILS) $(TASKS) $(tgz)
 
 clear:
 	rm -f libtask.a $(OBJS) $(UTILS) \
@@ -29,17 +29,16 @@ project: project.cpp libtask.a
 
 tests: tests.cpp libtask.a
 
-tasks: $(TASKS)
-	$(foreach var,$^, cd ../$(var)/; make)
+$(TASKS):
+	cd $@; make
 
-tgzs: $(tgz)
-	$(foreach var,$^, \
+$(tgz):
 	git commit -a -v || true; \
-	git rev-parse HEAD > ../$(var)/lib_sha; \
-	cd ../$(var)/; \
+	git rev-parse HEAD > ../$@/lib_sha; \
+	cd ../$@/; \
 	git commit -a -v || true; \
 	git rev-parse HEAD > project_sha; \
 	rm -f start.tgz; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
-	../tasklib/project register $(var))
+	../tasklib/project register $@

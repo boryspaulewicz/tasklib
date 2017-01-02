@@ -6,9 +6,6 @@ void Media::white_on_black(){
 }
 
 void Media::init(){
-  if(isOpen())
-    close();
-
   window_ready = false;
   create(VideoMode().getDesktopMode(), "Task", Style::Fullscreen);
   RenderTarget::initialize();
@@ -38,6 +35,12 @@ void Media::init(){
   state_durations.clear();
 
   while(!window_ready){}
+  // pierwsza ramka czasem siê nie pokazuje, gdy ten sam obiekt
+  // ponownie otwiera okno, albo, gdy obiekt jest nowy, jest obni¿ona
+  while(pollEvent(event)){}
+  clear();
+  display(); 
+  while(pollEvent(event)){}
 }
 
 sf::String Media::utf32(string s){
@@ -50,8 +53,6 @@ void Media::process_events(Event &event){
     case Event::KeyPressed :
       some_key_pressed = task_time();
       key_pressed[event.key.code] = some_key_pressed;
-      if(event.key.code == Keyboard::Escape)
-        close();
       break;
     case Event::KeyReleased :
       key_released[event.key.code] = task_time();

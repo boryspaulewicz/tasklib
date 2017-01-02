@@ -189,6 +189,7 @@ void Task::run(){
 
   cout << "Rozpoczynam pętlę prób zadania" << endl;
   task_start = high_resolution_clock::now();
+  ms task_start_ms = task_time();
   for(current_trial = 0; !task_is_finished(); current_trial++){
 
     trial_data.clear();
@@ -203,13 +204,15 @@ void Task::run(){
     trial_start = high_resolution_clock::now();
     state_start = trial_start;
     
-    while((trial_code(state) != OVER) && isOpen())
+    while((trial_code(state) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start_ms))
       process_events(event);
+    close();
+    if(keyp(KEYESCAPE) > task_start_ms)
+      break;
     
     if(use_db){
       if(current_trial > 0)
         send_data_thread->join();
-      if(isOpen())
         send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
     }else{
       cout << "Dane z próby: ";
@@ -226,12 +229,7 @@ void Task::run(){
       cout << endl;
     }
 
-    if(!isOpen())
-      break;
   }
-
-  if(isOpen())
-    close();
     
   cout << "Zadanie trwało " << floor(task_time() / 60000) << " minut." << endl;
 
