@@ -218,8 +218,9 @@ void Task::run(){
     if(keyp(KEYESCAPE) > task_start_ms)
       break;
 
-    if(use_db && (current_trial > 0)){
-      send_data_thread->join();
+    if(use_db){
+      if(send_data_thread != nullptr)
+        send_data_thread->join();
       send_data_thread = unique_ptr<thread>(new thread(send_data, task_name, trial_data));
     }
 
