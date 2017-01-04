@@ -33,7 +33,6 @@ void Media::init(){
   text.setFont(font);
   text.setCharacterSize((float)height * 0.03);
 
-  state_durations.clear();
 }
 
 void Media::close(){

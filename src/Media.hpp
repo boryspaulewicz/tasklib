@@ -5,11 +5,11 @@
 #include<iostream>
 #include<memory>
 #include<SFML/Graphics.hpp>
-#include"Timer.hpp"
+#include"States.hpp"
 using namespace std;
 using namespace sf;
 
-class Media : public RenderWindow, public Timer{
+class Media : public RenderWindow, public States{
 
 private:
 
@@ -17,17 +17,10 @@ private:
 
 protected:
 
-  int state;
-  time_type state_start, trial_start, task_start;
-  map<int, time_type> state_durations;
-  
   time_type some_key_pressed;
   vector<time_type> key_pressed, key_released, mouse_pressed, mouse_released;
   
 public:
-
-  bool debug = false;
-  bool measure_state_durations = true;
 
   void display(){ win->display(); }
   void clear(const Color& color = Color(0, 0, 0, 255)){ win->clear(color); }
@@ -60,16 +53,6 @@ public:
   void center(T& obj);
 
   sf::String utf32(string s);
-
-  inline void set_state(int s){
-    if(measure_state_durations)
-      state_durations[state] = time_ms() - state_start;
-    state = s;
-    state_start = time_ms();
-  }
-
-  inline time_type state_time(){ return time_ms() - state_start; }
-  inline time_type trial_time(){ return time_ms() - trial_start; }
 
 };
 

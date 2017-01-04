@@ -17,15 +17,9 @@ public:
 
   Timer();
 
-  inline time_type time_ms(){
-    return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() -
-                                                    start).count();
-  }
+  inline time_type time_ms(){ return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - start).count(); }
 
-  inline time_type time_mu(){
-    return duration_cast<std::chrono::microseconds>(high_resolution_clock::now() -
-                                                    start).count();
-  }
+  inline time_type time_mu(){ return duration_cast<std::chrono::microseconds>(high_resolution_clock::now() - start).count(); }
 
 };
 

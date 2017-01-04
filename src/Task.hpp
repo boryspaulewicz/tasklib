@@ -34,6 +34,11 @@ using namespace sf;
 
 class Task : public Media{
 
+private:
+
+  bool debug = false;
+  time_type task_start;
+  
 protected:
 
   enum TRIAL_STATUS{OVER, NOT_OVER};
@@ -101,7 +106,7 @@ void Task::display(){
       condition += f.first + ": " + cnd(f.first);
     Text text;
     text.setFont(font); text.setCharacterSize((float)height * 0.02);
-    text.setString("state: " + to_string(state) + " condition: " + condition);
+    text.setString("state: " + to_string(state()) + " condition: " + condition);
     text.setColor(Color::Green);
     text.setPosition(Vector2f(0, 0));
     draw(text);

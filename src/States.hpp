@@ -1,20 +1,26 @@
-#include "Media.hpp"
+#ifndef STATES
+#define STATES
 
-class States : public Media{
+#include "Timer.hpp"
+
+class States : public Timer{
 
 private:
 
-  int state = 0;
-
+  time_type state_start;
+  int current_state = 0;
+  
 public:
 
   void set_state(int s){
-    state = s;
+    current_state = s;
     state_start = time_ms();
   }
 
-  int get_state(){
-    return state;
-  }
+  time_type state_time(){ return time_ms() - state_start; }
+
+  int state(){ return current_state; }
 
 };
+
+#endif

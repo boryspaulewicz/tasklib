@@ -181,25 +181,13 @@ void Task::run(){
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
 
-    if(measure_state_durations)
-      state_durations.clear();
+    set_state(0);
     
-    state = 0;
-    trial_start = time_ms();
-    state_start = trial_start;
-    
-    while((trial_code(state) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start))
+    while((trial_code(state()) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start))
       process_events(event);
     
     if(keyp(KEYESCAPE) > task_start)
       break;
-
-    if(measure_state_durations){
-      cout << "Czas trwania stanów (mu) ";
-      for(auto& d : state_durations)
-        cout << to_string(d.first) << ": " << to_string(d.second) + " ";
-      cout << endl;
-    }
 
     if(use_db)
       unique_ptr<Datasaver> ds = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
