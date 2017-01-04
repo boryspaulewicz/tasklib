@@ -70,7 +70,6 @@ public:
 
   inline time_type state_time(){ return time_ms() - state_start; }
   inline time_type trial_time(){ return time_ms() - trial_start; }
-  inline time_type task_time(){ return time_ms() - task_start; }
 
 };
 

@@ -119,7 +119,7 @@ void Task::register_session(){
 
 bool Task::task_is_finished(){
   if(!finished)
-    finished = (current_trial == nof_trials) || ((max_task_time > 0) && (task_time() >= max_task_time));
+    finished = (current_trial == nof_trials) || ((max_task_time > 0) && ((time_ms() - task_start) >= max_task_time));
   return finished;
 }
 
@@ -213,5 +213,5 @@ void Task::run(){
 
   Media::close();
   
-  cout << "Zadanie trwało " << floor(task_time() / 60000) << " minut." << endl;
+  cout << "Zadanie trwało " << floor((time_ms() - task_start) / 60000) << " minut." << endl;
 }

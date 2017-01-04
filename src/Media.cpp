@@ -54,17 +54,17 @@ void Media::process_events(Event &event){
   while(win->pollEvent(event)){
     switch(event.type){
     case Event::KeyPressed :
-      some_key_pressed = task_time();
+      some_key_pressed = time_ms();
       key_pressed[event.key.code] = some_key_pressed;
       break;
     case Event::KeyReleased :
-      key_released[event.key.code] = task_time();
+      key_released[event.key.code] = time_ms();
       break;
     case Event::MouseButtonPressed :
-      mouse_pressed[event.mouseButton.button] = task_time();
+      mouse_pressed[event.mouseButton.button] = time_ms();
       break;
     case Event::MouseButtonReleased :
-      mouse_released[event.mouseButton.button] = task_time();
+      mouse_released[event.mouseButton.button] = time_ms();
       break;
     default:
       break;
