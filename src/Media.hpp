@@ -3,17 +3,13 @@
 
 #include<vector>
 #include<iostream>
-#include<chrono>
 #include<memory>
 #include<SFML/Graphics.hpp>
+#include"Timer.hpp"
 using namespace std;
 using namespace sf;
-using namespace chrono;
 
-using ms = long int;
-using tp = high_resolution_clock::time_point;
-
-class Media : public RenderWindow{
+class Media : public RenderWindow, public Timer{
 
 private:
 
@@ -22,26 +18,20 @@ private:
 protected:
 
   int state;
-  tp state_start, trial_start, task_start;
-  map<int, ms> state_durations;
+  time_type state_start, trial_start, task_start;
+  map<int, time_type> state_durations;
   
-  ms some_key_pressed;
-  vector<ms> key_pressed, key_released, mouse_pressed, mouse_released;
+  time_type some_key_pressed;
+  vector<time_type> key_pressed, key_released, mouse_pressed, mouse_released;
   
 public:
 
   bool debug = false;
   bool measure_state_durations = true;
 
-  void display(){
-    win->display();
-  }
-  void clear(const Color& color = Color(0, 0, 0, 255)){
-    win->clear(color);
-  }
-  void draw(const Drawable &drawable){
-    win->draw(drawable);
-  }
+  void display(){ win->display(); }
+  void clear(const Color& color = Color(0, 0, 0, 255)){ win->clear(color); }
+  void draw(const Drawable &drawable){ win->draw(drawable); }
   
   Color bg = Color::Black, fg = Color::White;
   void white_on_black();
@@ -53,32 +43,18 @@ public:
 
   int width, height;
 
+  Media();
+
   void init();
   void close();
   
-  Media();
-  
   void process_events(Event &event);
 
-  ms some_keyp(){
-    return some_key_pressed;
-  }
-  
-  ms keyp(int key){
-    return key_pressed[key];
-  }
-
-  ms keyr(int key){
-    return key_released[key];
-  }
-
-  ms mousep(int button){
-    return mouse_pressed[button];
-  }
-
-  ms mouser(int button){
-    return mouse_released[button];
-  }
+  time_type some_keyp(){ return some_key_pressed; }
+  time_type keyp(int key){ return key_pressed[key]; }
+  time_type keyr(int key){ return key_released[key]; }
+  time_type mousep(int button){ return mouse_pressed[button]; }
+  time_type mouser(int button){ return mouse_released[button]; }
   
   template<class T>
   void center(T& obj);
@@ -86,29 +62,15 @@ public:
   sf::String utf32(string s);
 
   inline void set_state(int s){
-    if(measure_state_durations){
-      state_durations[state] =
-        duration_cast<std::chrono::microseconds>(high_resolution_clock::now() -
-                                                 state_start).count();
-    }
+    if(measure_state_durations)
+      state_durations[state] = time_ms() - state_start;
     state = s;
-    state_start = high_resolution_clock::now();
+    state_start = time_ms();
   }
 
-  inline ms state_time(ms t = 0){
-    return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() -
-                                                    state_start).count();  
-  }
-  
-  inline ms trial_time(){
-    return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() -
-                                                    trial_start).count();
-  }
-  
-  inline ms task_time(){
-    return duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() -
-                                                    task_start).count();
-  }
+  inline time_type state_time(){ return time_ms() - state_start; }
+  inline time_type trial_time(){ return time_ms() - trial_start; }
+  inline time_type task_time(){ return time_ms() - task_start; }
 
 };
 

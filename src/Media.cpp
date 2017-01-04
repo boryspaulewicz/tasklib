@@ -6,6 +6,7 @@ void Media::white_on_black(){
 }
 
 void Media::init(){
+
   win = unique_ptr<RenderWindow>(new RenderWindow(VideoMode().getDesktopMode(), "Task", Style::Fullscreen));
   win->setVerticalSyncEnabled(true);
   win->setMouseCursorVisible(false);

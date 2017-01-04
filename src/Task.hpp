@@ -20,7 +20,6 @@
 #include<chrono>
 #include<functional>
 using namespace std;
-using namespace std::chrono;
 
 #include <SFML/Graphics.hpp>
 using namespace sf;
@@ -31,7 +30,9 @@ using namespace sf;
 #include "Datasaver.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
-class Task : protected Media{
+#include "Timer.hpp"
+
+class Task : public Media{
 
 protected:
 
@@ -40,6 +41,7 @@ protected:
   vector<pair<string, vector<string> > > design;
   int b, n;
   unsigned int nof_trials;
+  unsigned int max_task_time;
   string task_name;
   bool initialized = false, finished = false;
   
@@ -81,16 +83,14 @@ protected:
 
   string get_session_data(string name);
   
-  unsigned int max_task_time;
-
-  void init(string task_name, vector<pair<string, vector<string> > > levels = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
+  void init(string task_name, vector<pair<string, vector<string> > > design = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
             unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials = 0, unsigned int max_task_time = 0);
   
   void run();
 
   virtual TRIAL_STATUS trial_code(int state) = 0;
 
-  virtual bool task_is_finished();
+  inline bool task_is_finished();
 
 };
 

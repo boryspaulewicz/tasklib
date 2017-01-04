@@ -2,7 +2,7 @@
 
 #include "Task.hpp"
 
-// Elementy wspólne dla wszystkich sesji
+// Elementy wspólne dla wszystkich zadań
 Database Task::db;
 map<string, string> Task::session_data;
 int Task::session_id;
@@ -22,9 +22,9 @@ int random_int(int min, int max){
 void get_sha_data(){
   if(Task::sha_data_initialized)
     return;
-  string value;
   ifstream f;
   f.open(LIB_SHA);
+  string value;
   if(f.good()){
     getline(f, value);
     if(value.size() != 40)
@@ -113,7 +113,7 @@ void Task::register_session(){
       session_id = r->getInt(1);
     cout << "session_id: " << session_id << endl;
   }else{
-    throw(runtime_error("Brak unikalnego identyfikatora, nie mogę zarejestrować tej sesji."));
+    throw(runtime_error("Brak danych osobowych, nie mogę zarejestrować tej sesji."));
   }
 }
 
@@ -173,8 +173,7 @@ void Task::run(){
   Media::init();
 
   cout << "Rozpoczynam pętlę prób zadania" << endl;
-  task_start = high_resolution_clock::now();
-  ms task_start_ms = task_time();
+  task_start = time_ms();
   for(current_trial = 0; !task_is_finished(); current_trial++){
 
     trial_data.clear();
@@ -186,13 +185,13 @@ void Task::run(){
       state_durations.clear();
     
     state = 0;
-    trial_start = high_resolution_clock::now();
+    trial_start = time_ms();
     state_start = trial_start;
     
-    while((trial_code(state) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start_ms))
+    while((trial_code(state) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start))
       process_events(event);
     
-    if(keyp(KEYESCAPE) > task_start_ms)
+    if(keyp(KEYESCAPE) > task_start)
       break;
 
     if(measure_state_durations){

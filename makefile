@@ -5,12 +5,12 @@ CXXFLAGS= -O3 -finline-functions -std=c++11 -O3 -I../tasklib/src `pkg-config gtk
 
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
 
-OBJS= Task.o Conditions.o Scenario.o Database.o Gui.o Media.o Datasaver.o
+OBJS= Conditions.o Scenario.o Database.o Gui.o Timer.o Media.o Datasaver.o Task.o
 OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
-TASKS:= $(shell ls -d ../* | sed /tasklib/d) $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
+TASKS:= sternberg test posner ## $(shell ls -d ../* | sed /tasklib/d) $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
 
 .PHONY: $(TASKS) $(tgz)
 
@@ -30,7 +30,7 @@ project: project.cpp libtask.a
 tests: tests.cpp libtask.a
 
 $(TASKS):
-	cd $@; make
+	cd ../$@; make
 
 $(tgz):
 	git commit -a -v || true; \
