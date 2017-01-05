@@ -190,8 +190,14 @@ void Task::run(){
     if(keyp(KEYESCAPE) > task_start)
       break;
 
-    if(use_db)
+    if(use_db){
       unique_ptr<Datasaver> ds = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
+    }else{
+      cout << "trial_data: ";
+      for(auto& d : trial_data)
+        cout << d.first << ": " << d.second << " ";
+      cout << endl;
+    }
   }
 
   if(use_db){
