@@ -10,7 +10,7 @@ OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
-TASKS:= sternberg test posner ## $(shell ls -d ../* | sed /tasklib/d) $(tgz) ## wersja spakowana musi byæ najpierw zaktualizowana
+TASKS:= sternberg test posner $(tgz) ## $(tgz), bo wersja spakowana musi byæ najpierw zaktualizowana
 
 .PHONY: $(TASKS) $(tgz)
 
@@ -30,7 +30,7 @@ project: project.cpp libtask.a
 tests: tests.cpp libtask.a
 
 $(TASKS):
-	cd ../$@; make
+	cd ../$@; make start LDLIBS="$(LDLIBS) ../tasklib/libtask.a"
 
 $(tgz):
 	git commit -a -v || true; \
