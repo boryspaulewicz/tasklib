@@ -73,10 +73,10 @@ protected:
 
  public:
 
-  inline void display();
-
   bool use_db = true;
   static Database db;
+
+  inline void display();
 
   friend void get_sha_data();
   

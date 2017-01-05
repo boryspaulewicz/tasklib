@@ -3,8 +3,6 @@
 #include "Database.hpp"
 #include "Gui.hpp"
 
-string Database::password = "";
-
 mutex Database::db_mutex;
 
 void Database::exception(SQLException &e){

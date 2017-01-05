@@ -4,7 +4,11 @@ all: $(OBJS:cpp=o)
 
 Task.o: Task.cpp *.hpp
 
-Media.o: States.hpp Timer.o
+Media.o: States.hpp Timer.hpp
+
+Datasaver.o: Database.hpp
+
+Database.o: Ptype.hpp
 
 %.o: %.cpp %.hpp
 	g++ -o $@ -c $< $(CXXFLAGS)

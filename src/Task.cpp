@@ -107,8 +107,8 @@ string Task::get_session_data(string name){
 void Task::register_session(){
   if(user_data_initialized){
     cout << "Rejestruję sesję" << endl;
-    db.execute(db.insert_statement("session", session_data));
-    auto r = db.query("SELECT LAST_INSERT_ID();");
+    Task::db.execute(Task::db.insert_statement("session", session_data));
+    auto r = Task::db.query("SELECT LAST_INSERT_ID();");
     if(r->next())
       session_id = r->getInt(1);
     cout << "session_id: " << session_id << endl;
@@ -124,7 +124,7 @@ bool Task::task_is_finished(){
 }
 
 void Task::mark_session_finished(){
-  db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
+  Task::db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
 }
 
 void Task::init(string task_name_, vector<pair<string, vector<string> > > design_,
@@ -166,7 +166,7 @@ void Task::run(){
 
   get_sha_data();
   if(use_db){
-    db.connect();
+    Task::db.connect();
     register_session();
   }
     
@@ -196,7 +196,7 @@ void Task::run(){
   if(use_db){
     if(task_is_finished())
       mark_session_finished();
-    db.disconnect();
+    Task::db.disconnect();
   }
 
   Media::close();

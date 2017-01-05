@@ -14,6 +14,8 @@
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include "Ptype.hpp"
+
 using namespace std;
 using namespace sql;
 
@@ -30,7 +32,7 @@ private:
 
 public:
 
-  static string password; // inaczej naruszenie ochrony pamięci
+  string password;
   
   void connect();
   void disconnect();
