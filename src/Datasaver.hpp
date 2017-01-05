@@ -15,7 +15,7 @@ private:
 
 public:
 
-  Datasaver(Database* db, string task_name, int session_id, map<string, string> session_data, map<string, string> trial_data);
+  Datasaver(Database* db, string& task_name, int& session_id, map<string, Ptype>& session_data, map<string, Ptype>& trial_data);
 
   ~Datasaver();
   

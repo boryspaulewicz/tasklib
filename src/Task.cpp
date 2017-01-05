@@ -4,7 +4,7 @@
 
 // Elementy wspólne dla wszystkich zadań
 Database Task::db;
-map<string, string> Task::session_data;
+map<string, Ptype> Task::session_data;
 int Task::session_id;
 bool Task::user_data_initialized = false;
 bool Task::sha_data_initialized = false;
@@ -29,7 +29,7 @@ void get_sha_data(){
     getline(f, value);
     if(value.size() != 40)
       throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
-    Task::session_data["lib_sha"] = "'" + value + "'";
+    Task::session_data["lib_sha"] = value;
   }else{
     cout << "Nie znalazłem pliku " LIB_SHA "." << endl;
   }
@@ -39,7 +39,7 @@ void get_sha_data(){
     getline(f, value);
     if(value.size() != 40)
       throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
-    Task::session_data["project_sha"] = "'" + value + "'";
+    Task::session_data["project_sha"] = value;
   }else{
     cout << "Nie znalazłem pliku" PROJECT_SHA "." << endl;
   }
@@ -47,7 +47,7 @@ void get_sha_data(){
 }
 
 void set_project_name(string project){
-  Task::session_data["project"] = "'" + project + "'";
+  Task::session_data["project"] = project;
 }
 
 void get_user_data(string instr){
@@ -55,8 +55,9 @@ void get_user_data(string instr){
     cout << "Pobieram dane osobowe" << endl;
     Instruction in(instr);
     Userdata ud;
-    for(auto d : ud.data)
-      Task::session_data[d.first] = d.second;
+    for(auto& v : {"name", "gender"})
+      Task::session_data[v] = ud.data[v];
+    Task::session_data["age"] = stoi(ud.data["age"]);
     Task::user_data_initialized = true;
   }
 }
@@ -67,19 +68,19 @@ string get_random_condition(string task_name, vector<string> conditions){
   map<string, int> counts;
   for(auto c : conditions)
     counts[c] = 0;
-  auto res = Task::db.query("select cnd, count(*) from session where task = '" + task_name +
-                            "' and stage = 'finished' and name != 'admin' group by cnd;");
+  auto res = Task::db.query("SELECT cnd, COUNT(*) FROM session WHERE task = '" + task_name +
+                            "' AND stage = 'finished' AND name != 'admin' GROUP BY cnd;");
   while(res->next()){
     counts[res->getString(1)] = res->getInt(2);
     conditions.push_back(res->getString(1));
   }
-
+  
   cout << "Liczba sesji na warunek " + task_name + ":" << endl;
   for(auto c : counts)
     cout << c.first << ": " << c.second << endl;
 
   string chosen;
-  if(Task::session_data["name"] == "admin"){
+  if(to_string(Task::session_data["name"]) == "admin"){
     Chooseitem ci(conditions, "Wybór administratora");
     chosen = ci.value;
   }else{
@@ -95,12 +96,12 @@ string get_random_condition(string task_name, vector<string> conditions){
     }
     chosen = conditions[j];
   }
-  Task::session_data["cnd"] = "'" + chosen + "'";
+  Task::session_data["cnd"] = chosen;
   cout << "Wybrany warunek: " + chosen << endl;
   return chosen;
 }
 
-string Task::get_session_data(string name){
+Ptype Task::get_session_data(string name){
   return session_data[name];
 }
 
@@ -127,7 +128,7 @@ void Task::mark_session_finished(){
   Task::db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
 }
 
-void Task::init(string task_name_, vector<pair<string, vector<string> > > design_,
+void Task::init(string task_name_, vector<pair<string, vector<Ptype> > > design_,
                 unsigned int b_, unsigned int n_, unsigned int nof_trials_,
                 unsigned int max_task_time_){
   task_name = task_name_; design = design_;
@@ -142,7 +143,7 @@ void Task::init(string task_name_, vector<pair<string, vector<string> > > design
 
   if(task_name == "")
     throw(runtime_error("Nie podano nazwy zadania"));
-  session_data["task"] = "'" + task_name + "'";
+  session_data["task"] = task_name;
 
   initialized = true;
   finished = false;
@@ -169,7 +170,7 @@ void Task::run(){
     Task::db.connect();
     register_session();
   }
-    
+
   Media::init();
 
   cout << "Rozpoczynam pętlę prób zadania" << endl;
@@ -177,7 +178,7 @@ void Task::run(){
   for(current_trial = 0; !task_is_finished(); current_trial++){
 
     trial_data.clear();
-    trial_data["trial"] = to_string(current_trial);
+    trial_data["trial"] = current_trial;
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
 

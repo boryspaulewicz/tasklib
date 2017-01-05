@@ -40,7 +40,7 @@ public:
   unique_ptr<ResultSet> query(string q);
   void execute(string q);
   void register_session();
-  string insert_statement(string table, map<string, string> &d);
+  string insert_statement(string table, map<string, Ptype>& d);
 
   ~Database();
 };

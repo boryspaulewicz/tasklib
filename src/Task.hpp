@@ -43,7 +43,7 @@ protected:
 
   enum TRIAL_STATUS{OVER, NOT_OVER};
   
-  vector<pair<string, vector<string> > > design;
+  vector<pair<string, vector<Ptype> > > design;
   int b, n;
   unsigned int nof_trials;
   unsigned int max_task_time;
@@ -52,24 +52,21 @@ protected:
   
   unique_ptr<Conditions> cs;
   unique_ptr<Scenario> scen;
-  unsigned int current_trial;
+  int current_trial;
 
   static int session_id;
-  static map<string, string> session_data;
+  static map<string, Ptype> session_data;
   static bool user_data_initialized;
   static bool sha_data_initialized;
-  map<string, string> trial_data;
+  map<string, Ptype> trial_data;
 
   void register_session();
 
   void mark_session_finished();
 
-  template<typename T>
-  void set_trial_data(string name, T value){
-    trial_data[name] = to_string(value);
-  }
+  void set_trial_data(string name, Ptype value){ trial_data[name] = value; }
   
-  inline string cnd(string f){ return cs->get(f, scen->get(current_trial)); }
+  Ptype cnd(string f){ return cs->get(f, scen->get(current_trial)); }
 
  public:
 
@@ -86,9 +83,9 @@ protected:
 
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
-  string get_session_data(string name);
+  Ptype get_session_data(string name);
   
-  void init(string task_name, vector<pair<string, vector<string> > > design = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
+  void init(string task_name, vector<pair<string, vector<Ptype> > > design = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
             unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials = 0, unsigned int max_task_time = 0);
   
   void run();
@@ -103,7 +100,7 @@ void Task::display(){
   if(debug){
     string condition;
     for(auto& f : cs->factors)
-      condition += f.first + ": " + cnd(f.first);
+      condition += f.first + ": " + to_string(cnd(f.first));
     Text text;
     text.setFont(font); text.setCharacterSize((float)height * 0.02);
     text.setString("state: " + to_string(state()) + " condition: " + condition);

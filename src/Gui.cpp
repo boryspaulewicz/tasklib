@@ -68,9 +68,9 @@ void Userdata::button_pressed(){
     return;
   }
   if(trim(name.get_text()) == "admin"){
-    data["name"] = "'admin'";
+    data["name"] = "admin";
     data["age"] = "0";
-    data["gender"] = "'M'";
+    data["gender"] = "M";
     cout << "Admin user data provided" << endl;
     close();
     return;
@@ -82,7 +82,7 @@ void Userdata::button_pressed(){
     msg.run();
     return;
   }
-  data["name"] = "'" + trim(name.get_text()) + "'";
+  data["name"] = trim(name.get_text());
 
   if(trim(age.get_text()) == string("")){
     MessageDialog msg(*this, "Brak danych w polu Wiek");
@@ -101,7 +101,7 @@ void Userdata::button_pressed(){
     msg.run();
     return;
   }
-  data["gender"] = "'" + gender.get_active_text() + "'"; // nullptr jeśli żaden nie jest wybrany
+  data["gender"] = gender.get_active_text(); // nullptr jeśli żaden nie jest wybrany
 
   close();
 }

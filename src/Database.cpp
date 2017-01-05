@@ -41,11 +41,11 @@ void Database::execute(string q){
   }
 }
 
-string Database::insert_statement(string table, map<string, string> &d){
+string Database::insert_statement(string table, map<string, Ptype>& d){
   stringstream cols, vals;
   for(auto x = d.begin(); x != d.end(); x++){
     cols << x->first;
-    vals << x->second;
+    vals << x->second.sql_val();
     if(x != --d.end()){
       cols << ",";
       vals << ",";

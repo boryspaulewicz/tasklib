@@ -19,6 +19,8 @@ public:
 
   val_type type;
   int varchar_size = 50;
+
+  Ptype() : type(INT), ival{0}{}
   
   string sql_type(){
     switch(type){
