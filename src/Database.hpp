@@ -22,9 +22,10 @@ using namespace sql;
 class Database{
 private:
 
-  static mutex db_mutex;
+  mutex db_mutex;
 
-  Driver *driver; // tylko pobieramy wskaźnik do istniejącego wcześniej drivera
+  // tylko pobieramy wskaźnik do istniejącego wcześniej drivera
+  Driver *driver;
   unique_ptr<Connection> con;
   unique_ptr<Statement> stmt;
 

@@ -3,8 +3,6 @@
 #include "Database.hpp"
 #include "Gui.hpp"
 
-mutex Database::db_mutex;
-
 void Database::exception(SQLException &e){
   cout << "# ERR: SQLException in " << __FILE__;
   cout << "(" << __FUNCTION__ << ") on line "
@@ -16,31 +14,31 @@ void Database::exception(SQLException &e){
 }
 
 unique_ptr<ResultSet> Database::query(string q){
-  // db_mutex.lock();
   try{
+    db_mutex.lock();
     if(con == nullptr || con->isClosed()){
       connect();
     }
+    db_mutex.unlock();
     cout << "query: " << q << endl;
     return unique_ptr<ResultSet>(stmt->executeQuery(q));
   }catch(SQLException &e){
     exception(e);
   }
-  // db_mutex.unlock();
 }
 
 void Database::execute(string q){
-  // db_mutex.lock();
   try{
+    db_mutex.lock();
     if(con == nullptr || con->isClosed()){
       connect();
     }
     cout << "execute: " << q << endl;
     stmt->execute(q);
+    db_mutex.unlock();
   }catch(SQLException &e){
     exception(e);
   }
-  // db_mutex.unlock();
 }
 
 string Database::insert_statement(string table, map<string, string> &d){
@@ -57,10 +55,11 @@ string Database::insert_statement(string table, map<string, string> &d){
 }
 
 void Database::connect(){
-  // db_mutex.lock();
-  if(!(con == nullptr || con->isClosed()))
-    return;
-
+  { lock_guard<mutex> lock(db_mutex);
+    if(!(con == nullptr || con->isClosed()))
+      return;
+  }
+    
   if(password == ""){
     if(getenv("TASKLIB") == nullptr){
       Uservalue uv("Podaj hasło:", false);
@@ -71,29 +70,32 @@ void Database::connect(){
   }
   
   try{
+    db_mutex.lock();
     driver = get_driver_instance();
     con = unique_ptr<Connection>(driver->connect("tcp://5.189.166.138:443", "task", password));
     con->setSchema("task");
     stmt = unique_ptr<Statement>(con->createStatement());
+    db_mutex.unlock();
     unique_ptr<ResultSet> res(query("SELECT 'Ustanowiłem połączenie z bazą danych' AS message"));
+    db_mutex.lock();
     while(res->next()){
       cout << res->getString("message") << endl;
     }
+    db_mutex.unlock();
     execute("SET NAMES utf8;");
   }catch(SQLException &e){
     exception(e);
   }
-  // db_mutex.unlock();
 }
 
 void Database::disconnect(){
-  // db_mutex.lock();
+  db_mutex.lock();
   if(!(con == nullptr || con->isClosed())){
     con->close();
     con = nullptr;
     cout << "Zamykam ewentualne połączenie z bazą danych" << endl;
   }
-  // db_mutex.unlock();
+  db_mutex.unlock();
 }
 
 Database::~Database(){
