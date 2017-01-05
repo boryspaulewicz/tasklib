@@ -60,6 +60,8 @@ public:
   bool operator==(const char (&v)[N]){ return (string)(*this) == v; }
   template<class T>
   bool operator!=(const T& v){ return (T)(*this) != v; }
+  template<size_t N>
+  bool operator!=(const char (&v)[N]){ return (string)(*this) != v; }
   
   operator double(){
     switch(type){
