@@ -80,7 +80,7 @@ string get_random_condition(string task_name, vector<string> conditions){
     cout << c.first << ": " << c.second << endl;
 
   string chosen;
-  if(to_string(Task::session_data["name"]) == "admin"){
+  if(Task::session_data["name"] == "admin"){
     Chooseitem ci(conditions, "Wybór administratora");
     chosen = ci.value;
   }else{

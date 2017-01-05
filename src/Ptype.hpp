@@ -42,16 +42,25 @@ public:
     }
   }
   
-  Ptype(const char v[]){ type = STRING; sval = (const char*)v; }
+  template<size_t N>
+  Ptype(const char (&v)[N]){ type = STRING; sval = (const char*)v; }
   Ptype(const string& v){ type = STRING; sval = v; }
   Ptype(const double& v){ type = DOUBLE; dval = v; }
   Ptype(const int& v){ type = INT; ival = v; }
 
-  void operator=(const char v[]){ type = STRING; sval = string((const char*)v); }
+  template<size_t N>
+  void operator=(const char (&v)[N]){ type = STRING; sval = string((const char*)v); }
   void operator=(const string& v){ type = STRING; sval = v; }
   void operator=(const double& v){ type = DOUBLE; dval = v; }
   void operator=(const int& v){ type = INT; ival = v; }
 
+  template<class T>
+  bool operator==(const T& v){ return (T)(*this) == v; }
+  template<size_t N>
+  bool operator==(const char (&v)[N]){ return (string)(*this) == v; }
+  template<class T>
+  bool operator!=(const T& v){ return (T)(*this) != v; }
+  
   operator double(){
     switch(type){
     case STRING:
