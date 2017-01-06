@@ -41,7 +41,7 @@ private:
   
 protected:
 
-  enum TRIAL_STATUS{OVER, NOT_OVER};
+  bool TRIAL_IS_OVER;
   
   vector<pair<string, vector<Ptype> > > design;
   int b, n;
@@ -90,7 +90,7 @@ protected:
   
   void run();
 
-  virtual TRIAL_STATUS trial_code(int state) = 0;
+  virtual void trial_code(int state) = 0;
 
   inline bool task_is_finished();
 

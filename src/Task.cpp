@@ -182,10 +182,12 @@ void Task::run(){
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
 
+    TRIAL_IS_OVER = false;
     set_state(0);
-    
-    while((trial_code(state()) == NOT_OVER) && (keyp(KEYESCAPE) <= task_start))
+    while(!TRIAL_IS_OVER && (keyp(KEYESCAPE) <= task_start)){
+      trial_code(state());
       process_events(event);
+    }
     
     if(keyp(KEYESCAPE) > task_start)
       break;

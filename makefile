@@ -10,7 +10,9 @@ OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
-TASKS:= stroop sternberg test posner $(tgz) ## $(tgz), bo wersja spakowana musi byæ najpierw zaktualizowana
+## $(tgz) na koñcu, bo wersja spakowana musi byæ najpierw
+## zaktualizowana
+TASKS:= stroop posner sternberg test $(tgz)
 
 .PHONY: $(TASKS) $(tgz)
 
