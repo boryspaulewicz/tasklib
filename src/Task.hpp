@@ -65,6 +65,7 @@ protected:
   void mark_session_finished();
 
   void set_trial_data(string name, Ptype value){ trial_data[name] = value; }
+  void set_trial_data(initializer_list<pair<string, Ptype> >values){ for(auto& v : values)trial_data[v.first] = v.second; }
   
   Ptype cnd(string f){ return cs->get(f, scen->get(current_trial)); }
 

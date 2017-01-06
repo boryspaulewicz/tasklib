@@ -31,7 +31,7 @@ void Media::init(){
   if(!font.loadFromFile(font_name))
     throw(runtime_error("Nie uda³o siê za³adowaæ domy¶lnej czcionki: " + font_name));
   text.setFont(font);
-  text.setCharacterSize((float)height * 0.03);
+  text.setCharacterSize((float)height * 0.05);
 
 }
 
