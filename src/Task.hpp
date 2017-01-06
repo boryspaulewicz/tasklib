@@ -6,7 +6,6 @@
 #ifndef TASK
 #define TASK
 
-#include<random>
 #include<stdio.h>
 #include<stdlib.h>
 #include<iostream>
@@ -24,6 +23,7 @@ using namespace std;
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
+#include "Utils.hpp"
 #include "Conditions.hpp"
 #include "Scenario.hpp"
 #include "Database.hpp"
@@ -96,6 +96,8 @@ protected:
 
   virtual void trial_code(int state) = 0;
 
+  bool measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start);
+  
   inline bool task_is_finished();
 
 };

@@ -10,6 +10,6 @@ Datasaver.o: Database.hpp
 
 Database.o: Ptype.hpp
 
-%.o: %.cpp %.hpp
+%.o: %.cpp %.hpp Utils.hpp
 	g++ -o $@ -c $< $(CXXFLAGS)
 

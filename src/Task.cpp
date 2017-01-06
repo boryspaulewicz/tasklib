@@ -12,20 +12,6 @@ bool Task::sha_data_initialized = false;
 #define LIB_SHA "lib_sha"
 #define PROJECT_SHA "project_sha"
 
-vector<int> vseq(int from, int to){
-  vector<int> res;
-  for(; from <= to; from++)
-    res.push_back(from);
-  return res;
-}
-
-int random_int(int min, int max){
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> dis(min, max);
-    return dis(gen);
-}
-
 void get_sha_data(){
   if(Task::sha_data_initialized)
     return;
@@ -123,6 +109,18 @@ void Task::register_session(){
   }else{
     throw(runtime_error("Brak danych osobowych, nie mogę zarejestrować tej sesji."));
   }
+}
+
+bool Task::measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start){
+  for(int i = 0; i < response_keys.size(); i++){
+    rt = keyp(response_keys[i]) - start;
+    if(rt > 0){
+      response = i;
+      set_trial_data({{"resp", response}, {"rt", rt}});
+      return true;
+    }
+  }
+  return false;
 }
 
 bool Task::task_is_finished(){

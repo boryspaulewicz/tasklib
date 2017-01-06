@@ -1,25 +1,11 @@
 // coding: utf-8 -*-
 
 #include "Gui.hpp"
+#include "Utils.hpp"
 
 // Ten obiekt musi powstać przed wszystkimi innymi
 namespace Gui{
   Main m;
-}
-
-string trim(string str)
-{
-  size_t first = str.find_first_not_of(' ');
-  if (first == string::npos)
-    return "";
-  size_t last = str.find_last_not_of(' ');
-  return str.substr(first, (last-first+1));
-}
-
-bool rmatch(string pattern, string str){
-  smatch m;
-  regex re(pattern);
-  return regex_match(str, m, re);
 }
 
 void Taskwindow::init(){

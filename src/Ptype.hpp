@@ -1,6 +1,7 @@
 #ifndef PTYPE
 #define PTYPE
 
+#include "Utils.hpp"
 #include <string>
 #include <iostream>
 #include <map>
@@ -101,5 +102,9 @@ public:
 string to_string(const Ptype& v);
 
 ostream& operator<<(ostream& os, const Ptype& v);
+
+istream& operator>>(istream& os, Ptype& v);
+
+map<string, Ptype> read_cfg(string fname);
 
 #endif

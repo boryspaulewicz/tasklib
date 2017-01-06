@@ -5,7 +5,7 @@ CXXFLAGS= -O3 -finline-functions -std=c++11 -g -O3 -I../tasklib/src `pkg-config 
 
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
 
-OBJS= Conditions.o Scenario.o Database.o Gui.o Timer.o Media.o Datasaver.o Task.o Ptype.o
+OBJS= Utils.o Conditions.o Scenario.o Database.o Gui.o Timer.o Media.o Datasaver.o Task.o Ptype.o
 OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
@@ -32,7 +32,7 @@ project: project.cpp libtask.a
 tests: tests.cpp libtask.a
 
 $(TASKS):
-	cd ../$@; make start LDLIBS="$(LDLIBS) ../tasklib/libtask.a"
+	cd ../$@; make start
 
 $(tgz):
 	git commit -a -v || true; \
