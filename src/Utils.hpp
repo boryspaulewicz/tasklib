@@ -15,6 +15,24 @@ bool rmatch(string pattern, string str);
 
 int random_int(int min, int max);
 
-vector<int> vseq(int from, int to);
+template<typename T>
+vector<T> vseq(T from, T to){
+  vector<T> res;
+  for(; from != to; from++)
+    res.push_back(from);
+  return res;
+}
+
+template<typename T>
+void permute(vector<T>& scen){
+  T stored;
+  int rand_i;
+  for(int i = 0; i < scen.size() - 1; i++){
+    stored = scen[i];
+    rand_i = rand() % scen.size();
+    scen[i] = scen[rand_i];
+    scen[rand_i] = stored;
+  }
+}
 
 #endif

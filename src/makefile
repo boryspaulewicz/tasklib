@@ -2,6 +2,8 @@ OBJS:= $(shell ls *.cpp)
 
 all: $(OBJS:cpp=o)
 
+States.hpp: Timer.hpp
+
 Task.o: Task.cpp *.hpp
 
 Media.o: Timer.hpp

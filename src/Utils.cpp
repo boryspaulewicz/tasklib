@@ -20,10 +20,3 @@ int random_int(int min, int max){
     uniform_int_distribution<> dis(min, max);
     return dis(gen);
 }
-
-vector<int> vseq(int from, int to){
-  vector<int> res;
-  for(; from <= to; from++)
-    res.push_back(from);
-  return res;
-}
