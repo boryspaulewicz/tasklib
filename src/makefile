@@ -4,7 +4,7 @@ all: $(OBJS:cpp=o)
 
 Task.o: Task.cpp *.hpp
 
-Media.o: States.hpp Timer.hpp
+Media.o: Timer.hpp
 
 Datasaver.o: Database.hpp
 
