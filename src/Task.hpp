@@ -85,9 +85,12 @@ protected:
 
   Ptype get_session_data(string name);
   
-  void init(string task_name, vector<pair<string, vector<Ptype> > > design = {{"f", {"A", "B"}}, {"g", {"1", "2", "3"}}},
-            unsigned int b = 1, unsigned int n = 1, unsigned int nof_trials = 0, unsigned int max_task_time = 0);
+  void init(string task_name, vector<pair<string, vector<Ptype> > > design, unsigned int b = 1, unsigned int n = 1,
+            unsigned int nof_trials = 0, unsigned int max_task_time = 0);
   
+  void run(string task_name, vector<pair<string, vector<Ptype> > > design, unsigned int b = 1, unsigned int n = 1,
+           unsigned int nof_trials = 0, unsigned int max_task_time = 0);
+
   void run();
 
   virtual void trial_code(int state) = 0;
@@ -110,6 +113,8 @@ void Task::display(){
   }
   Media::display();
 }
+
+vector<int> vseq(int from, int to);
 
 int random_int(int min, int max);
 

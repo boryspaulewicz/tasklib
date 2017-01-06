@@ -12,6 +12,13 @@ bool Task::sha_data_initialized = false;
 #define LIB_SHA "lib_sha"
 #define PROJECT_SHA "project_sha"
 
+vector<int> vseq(int from, int to){
+  vector<int> res;
+  for(; from <= to; from++)
+    res.push_back(from);
+  return res;
+}
+
 int random_int(int min, int max){
     random_device rd;
     mt19937 gen(rd());
@@ -126,6 +133,13 @@ bool Task::task_is_finished(){
 
 void Task::mark_session_finished(){
   Task::db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
+}
+
+void Task::run(string task_name, vector<pair<string, vector<Ptype> > > design,
+               unsigned int b, unsigned int n, unsigned int nof_trials,
+               unsigned int max_task_time){
+  init(task_name, design, b, n, nof_trials, max_task_time);
+  run();
 }
 
 void Task::init(string task_name_, vector<pair<string, vector<Ptype> > > design_,
