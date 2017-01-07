@@ -5,6 +5,7 @@
 #ifndef DATABASE
 #define DATABASE
 
+#include "Common.hpp"
 #include <stdlib.h>
 #include <iostream>
 #include <sstream>
@@ -41,7 +42,8 @@ public:
   void execute(string q);
   void register_session();
   string insert_statement(string table, map<string, Ptype>& d);
-
+  bool table_exists(string table);
+  
   ~Database();
 };
 

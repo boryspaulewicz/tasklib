@@ -3,6 +3,7 @@
 #ifndef SCENARIO
 #define SCENARIO
 
+#include "Common.hpp"
 #include<vector>
 #include<stdlib.h>
 using namespace std;

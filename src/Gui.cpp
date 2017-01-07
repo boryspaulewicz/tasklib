@@ -57,7 +57,7 @@ void Userdata::button_pressed(){
     data["name"] = "admin";
     data["age"] = "0";
     data["gender"] = "M";
-    cout << "Admin user data provided" << endl;
+    log("Podano identyfikator administratora");
     close();
     return;
   }
@@ -114,30 +114,35 @@ Userdata::Userdata() : button("Dalej"), namel("Identyfikator"), agel("Wiek"), ge
 }
 
 void Uservalue::button_pressed(){
-  if(trim(valuee.get_text()) != ""){
-    value = trim(valuee.get_text());
-    close();
-  }else{
-    MessageDialog msg(*this, "Nie podano żadnej wartości");
-    msg.run();
-    return;
+  for(auto e : valuee){
+    value.push_back(trim(e->get_text()));
   }
+  close();
+  return;
 }
 
-Uservalue::Uservalue(string label, bool visibility) : valuel(label), button("Ok"){
+Uservalue::Uservalue(vector<string> labels, bool visibility) : button("Ok"){
   init();
   
   frame.add(vbox);
   vbox.set_border_width(10);
   vbox.set_spacing(10);
-  vbox.pack_start(valuel);
-  vbox.pack_start(valuee);
-  valuee.set_visibility(visibility);
+  for(string label : labels){
+    valuel.push_back(new Label(label));
+    valuee.push_back(new Entry());
+    vbox.pack_start(*valuel[valuel.size() - 1]);
+    vbox.pack_start(*valuee[valuee.size() - 1]);
+    valuee[valuee.size() - 1]->set_visibility(visibility);
+  }
   vbox.pack_start(button);
 
   button.signal_clicked().connect(sigc::mem_fun(*this, &Uservalue::button_pressed));
 
   run();
+  for(auto l : valuel)
+    delete l;
+  for(auto e : valuee)
+    delete e;
 }
   
 

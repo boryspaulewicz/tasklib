@@ -1,7 +1,9 @@
 #ifndef DATASAVER
 #define DATASAVER
 
+#include "Common.hpp"
 #include <map>
+#include <set>
 #include <string>
 #include <thread>
 #include "Database.hpp"

@@ -3,6 +3,7 @@
 #ifndef GUI
 #define GUI
 
+#include "Common.hpp"
 #include <gtkmm/window.h>
 #include <gtkmm/main.h>
 #include <gtkmm/button.h>
@@ -71,17 +72,17 @@ public:
 class Uservalue : public Taskwindow{
 
   VBox vbox;
-  Label valuel;
-  Entry valuee;
+  vector<Label*> valuel;
+  vector<Entry*> valuee;
   Button button;
 
   void button_pressed();
   
 public:
 
-  string value;
+  vector<string> value;
 
-  Uservalue(string label, bool visibility = true);
+  Uservalue(vector<string> labels, bool visibility = true);
   
 };
 

@@ -26,6 +26,12 @@ istream& operator>>(istream& is, Ptype& v){
   return is;
 }
 
+string operator+(string lhs, Ptype& rhs){ return lhs + (string)rhs; }
+
+string operator+(const char* lhs, Ptype& rhs){ return string(lhs) + (string)rhs; }
+
+string operator+(Ptype& lhs, const char* rhs){ return (string)lhs + string(rhs); }
+
 map<string, Ptype> read_cfg(string fname){
   map<string, Ptype> res;
   ifstream f;

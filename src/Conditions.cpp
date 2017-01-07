@@ -28,17 +28,16 @@ Conditions::Conditions(vector<pair<string, vector<Ptype> > > design){
 }
 
 void Conditions::print(){
-  cout << "Czynniki:" << endl;
+  string msg = "Czynniki:\n";
   for(auto& f : factors){
-    cout << f.first << ":";
+    msg += f.first + ":";
     for(auto& l : f.second)
-      cout << " " << l;
-    cout << endl;
+      msg += " " + l;
   }
-  cout << "Warunki zadania:" << endl;
-  for(int c = 0; c < nof_cnds; c++){
+  log(msg);
+  msg = "Warunki zadania:\n";
+  for(int c = 0; c < nof_cnds; c++)
     for(auto& f : names)
-      cout << get(f, c) << " ";
-    cout << endl;
-  }
+      msg += (string)get(f, c) + " ";
+  log(msg);
 }

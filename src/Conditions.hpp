@@ -3,6 +3,7 @@
 #ifndef CONDITIONS
 #define CONDITIONS
 
+#include "Common.hpp"
 #include<vector>
 #include<map>
 #include<string>

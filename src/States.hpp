@@ -1,6 +1,7 @@
 #ifndef STATES
 #define STATES
 
+#include "Common.hpp"
 #include "Timer.hpp"
 
 class States : public Timer{

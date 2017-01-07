@@ -1,6 +1,7 @@
 #ifndef TIMER
 #define TIMER
 
+#include"Common.hpp"
 #include<chrono>
 using namespace std::chrono;
 using tp = high_resolution_clock::time_point;

@@ -1,7 +1,7 @@
 #ifndef PTYPE
 #define PTYPE
 
-#include "Utils.hpp"
+#include "Common.hpp"
 #include <string>
 #include <iostream>
 #include <map>
@@ -102,8 +102,11 @@ public:
 string to_string(const Ptype& v);
 
 ostream& operator<<(ostream& os, const Ptype& v);
-
 istream& operator>>(istream& os, Ptype& v);
+
+string operator+(string lhs, Ptype& rhs);
+string operator+(const char* lhs, Ptype& rhs);
+string operator+(Ptype& lhs, const char* rhs);
 
 map<string, Ptype> read_cfg(string fname);
 

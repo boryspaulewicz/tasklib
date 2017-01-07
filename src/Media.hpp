@@ -1,11 +1,12 @@
 #ifndef MEDIA
 #define MEDIA
 
-#include<vector>
-#include<iostream>
-#include<memory>
-#include<SFML/Graphics.hpp>
-#include"States.hpp"
+#include "Common.hpp"
+#include <vector>
+#include <iostream>
+#include <memory>
+#include <SFML/Graphics.hpp>
+#include "States.hpp"
 using namespace std;
 using namespace sf;
 

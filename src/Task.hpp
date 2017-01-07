@@ -23,7 +23,7 @@ using namespace std;
 #include <SFML/Graphics.hpp>
 using namespace sf;
 
-#include "Utils.hpp"
+#include "Common.hpp"
 #include "Conditions.hpp"
 #include "Scenario.hpp"
 #include "Database.hpp"
@@ -36,7 +36,6 @@ class Task : public Media{
 
 private:
 
-  bool debug = false;
   time_type task_start;
   
 protected:

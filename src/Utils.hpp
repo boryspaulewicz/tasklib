@@ -29,7 +29,7 @@ void permute(vector<T>& scen){
   int rand_i;
   for(int i = 0; i < scen.size() - 1; i++){
     stored = scen[i];
-    rand_i = rand() % scen.size();
+    rand_i = random_int(0, scen.size() - 1);
     scen[i] = scen[rand_i];
     scen[rand_i] = stored;
   }

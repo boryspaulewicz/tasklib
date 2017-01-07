@@ -24,7 +24,7 @@ void get_sha_data(){
       throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
     Task::session_data["lib_sha"] = value;
   }else{
-    cout << "Nie znalazłem pliku " LIB_SHA "." << endl;
+    log("Nie znalazłem pliku " LIB_SHA ".");
   }
   f.close();
   f.open(PROJECT_SHA);
@@ -34,7 +34,7 @@ void get_sha_data(){
       throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
     Task::session_data["project_sha"] = value;
   }else{
-    cout << "Nie znalazłem pliku" PROJECT_SHA "." << endl;
+    log("Nie znalazłem pliku" PROJECT_SHA);
   }
   Task::sha_data_initialized = true;
 }
@@ -45,7 +45,7 @@ void set_project_name(string project){
 
 void get_user_data(string instr){
   if(!Task::user_data_initialized){
-    cout << "Pobieram dane osobowe" << endl;
+    log("Pobieram dane osobowe");
     Instruction in(instr);
     Userdata ud;
     for(auto& v : {"name", "gender"})
@@ -68,9 +68,9 @@ string get_random_condition(string task_name, vector<string> conditions){
     conditions.push_back(res->getString(1));
   }
   
-  cout << "Liczba sesji na warunek " + task_name + ":" << endl;
+  log("Liczba sesji na warunek " + task_name + ":");
   for(auto c : counts)
-    cout << c.first << ": " << c.second << endl;
+    log(c.first + ": " + to_string(c.second));
 
   string chosen;
   if(Task::session_data["name"] == "admin"){
@@ -90,7 +90,7 @@ string get_random_condition(string task_name, vector<string> conditions){
     chosen = conditions[j];
   }
   Task::session_data["cnd"] = chosen;
-  cout << "Wybrany warunek: " + chosen << endl;
+  log("Wybrany warunek: " + chosen);
   return chosen;
 }
 
@@ -100,12 +100,11 @@ Ptype Task::get_session_data(string name){
 
 void Task::register_session(){
   if(user_data_initialized){
-    cout << "Rejestruję sesję" << endl;
+    log("Rejestruję sesję");
     Task::db.execute(Task::db.insert_statement("session", session_data));
     auto r = Task::db.query("SELECT LAST_INSERT_ID();");
     if(r->next())
       session_id = r->getInt(1);
-    cout << "session_id: " << session_id << endl;
   }else{
     throw(runtime_error("Brak danych osobowych, nie mogę zarejestrować tej sesji."));
   }
@@ -174,7 +173,7 @@ void Task::run(){
     throw(std::runtime_error("Liczba prób większa niż długość scenariusza"));
   }
 
-  cout << "Długość zadania: " << nof_trials  << endl;
+  log("Długość zadania: " + to_string(nof_trials));
   cs->print();
 
   get_sha_data();
@@ -185,7 +184,7 @@ void Task::run(){
 
   Media::init();
 
-  cout << "Rozpoczynam pętlę prób zadania" << endl;
+  log("Rozpoczynam pętlę prób zadania");
   task_start = time_ms();
   for(current_trial = 0; !task_is_finished(); current_trial++){
 
@@ -207,10 +206,10 @@ void Task::run(){
     if(use_db){
       unique_ptr<Datasaver> ds = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
     }else{
-      cout << "trial_data: ";
+      string msg = "Dane z próby:\n";
       for(auto& d : trial_data)
-        cout << d.first << ": " << d.second << " ";
-      cout << endl;
+        msg += d.first + ": " + (string)d.second + " ";
+      log(msg);
     }
   }
 
@@ -222,5 +221,5 @@ void Task::run(){
 
   Media::close();
   
-  cout << "Zadanie trwało " << floor((time_ms() - task_start) / 60000) << " minut." << endl;
+  log("Zadanie trwało " + to_string(floor((time_ms() - task_start) / 60000)) + " minut");
 }

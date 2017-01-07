@@ -4,12 +4,11 @@
 #include "Gui.hpp"
 
 void Database::exception(SQLException &e){
-  cout << "# ERR: SQLException in " << __FILE__;
-  cout << "(" << __FUNCTION__ << ") on line "
-       << __LINE__ << endl;
-  cout << "# ERR: " << e.what();
-  cout << " (MySQL error code: " << e.getErrorCode();
-  cout << ", SQLState: " << e.getSQLState() << " )" << endl;
+  log("# ERR: SQLException in " +
+      string(__FILE__) + "(" + string(__FUNCTION__) + ") on line " +
+      to_string(__LINE__) + "\n" + "# ERR: " + string(e.what()) +
+      " (MySQL error code: " + to_string(e.getErrorCode()) +
+      ", SQLState: " + string(e.getSQLState()) + " )");
   exit(1);
 }
 
@@ -20,7 +19,7 @@ unique_ptr<ResultSet> Database::query(string q){
       connect();
     }
     db_mutex.unlock();
-    cout << "query: " << q << endl;
+    log("query: " + q);
     return unique_ptr<ResultSet>(stmt->executeQuery(q));
   }catch(SQLException &e){
     exception(e);
@@ -33,7 +32,7 @@ void Database::execute(string q){
     if(con == nullptr || con->isClosed()){
       connect();
     }
-    cout << "execute: " << q << endl;
+    log("execute: " + q);
     stmt->execute(q);
     db_mutex.unlock();
   }catch(SQLException &e){
@@ -54,6 +53,13 @@ string Database::insert_statement(string table, map<string, Ptype>& d){
   return "INSERT INTO " + table + " (" + cols.str() + ") VALUES (" + vals.str() + ");";
 }
 
+bool Database::table_exists(string table){
+  execute("USE information_schema");
+  auto res = query("SELECT * FROM TABLES WHERE TABLE_SCHEMA = 'task' AND TABLE_NAME = '" + table + "';");
+  execute("USE task;");
+  return res->next();
+}
+
 void Database::connect(){
   { lock_guard<mutex> lock(db_mutex);
     if(!(con == nullptr || con->isClosed()))
@@ -62,8 +68,8 @@ void Database::connect(){
     
   if(password == ""){
     if(getenv("TASKLIB") == nullptr){
-      Uservalue uv("Podaj hasło:", false);
-      password = uv.value;
+      Uservalue uv({"Podaj hasło:"}, false);
+      password = uv.value[0];
     }else{
       password = string(getenv("TASKLIB"));
     }
@@ -79,7 +85,7 @@ void Database::connect(){
     unique_ptr<ResultSet> res(query("SELECT 'Ustanowiłem połączenie z bazą danych' AS message"));
     db_mutex.lock();
     while(res->next()){
-      cout << res->getString("message") << endl;
+      log(res->getString("message"));
     }
     db_mutex.unlock();
     execute("SET NAMES utf8;");
@@ -91,9 +97,10 @@ void Database::connect(){
 void Database::disconnect(){
   db_mutex.lock();
   if(!(con == nullptr || con->isClosed())){
+    if(con != nullptr)
+      log("Zamykam połączenie z bazą danych");
     con->close();
     con = nullptr;
-    cout << "Zamykam ewentualne połączenie z bazą danych" << endl;
   }
   db_mutex.unlock();
 }

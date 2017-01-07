@@ -2,7 +2,9 @@ OBJS:= $(shell ls *.cpp)
 
 all: $(OBJS:cpp=o)
 
-States.hpp: Timer.hpp
+COMMON= Common.hpp Utils.hpp Log.hpp
+
+*.o: $(COMMON)
 
 Task.o: Task.cpp *.hpp
 
