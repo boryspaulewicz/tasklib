@@ -75,7 +75,7 @@ protected:
 
   friend void get_sha_data();
   friend void set_project_name(string project);
-  friend void get_user_data(string instruction = "");
+  friend void get_user_data(string instruction);
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
   Ptype get_session_data(string name);

@@ -57,8 +57,6 @@ void set_project_name(string project){
 
 void get_user_data(string instr){
   if(!Task::user_data_initialized){
-    if(instr == "")
-      instr = user_data_instr;
     log("Pobieram dane osobowe");
     Instruction in(instr);
     Userdata ud;
@@ -207,24 +205,28 @@ void Task::run(){
     trial_data["trial"] = current_trial;
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
-
+    unique_ptr<Datasaver> data_saver;
+    
     TRIAL_IS_OVER = false;
     set_state(0);
     while(!TRIAL_IS_OVER && (keyp(KEYESCAPE) <= task_start)){
       trial_code(state());
       process_events(event);
     }
-    
-    if(keyp(KEYESCAPE) > task_start)
-      break;
+    log("Próba zakończona");
 
-    if(use_db){
-      unique_ptr<Datasaver> ds = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
+    if(keyp(KEYESCAPE) <= task_start){
+      if(use_db){
+        log("Zapisuję dane");
+        data_saver = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
+      }else{
+        string msg = "Dane z próby:\n";
+        for(auto& d : trial_data)
+          msg += d.first + ": " + (string)d.second + " ";
+        log(msg);
+      }
     }else{
-      string msg = "Dane z próby:\n";
-      for(auto& d : trial_data)
-        msg += d.first + ": " + (string)d.second + " ";
-      log(msg);
+      break;
     }
   }
 

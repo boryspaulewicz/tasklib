@@ -13,7 +13,7 @@ class Datasaver{
 
 private:
 
-  thread* send_data_thread = nullptr;
+  thread* send_data_thread;
 
 public:
 

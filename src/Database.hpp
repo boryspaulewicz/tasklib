@@ -31,11 +31,12 @@ private:
   unique_ptr<Statement> stmt;
 
   void exception(SQLException &e);
-
+ 
 public:
 
   string password;
   
+  bool connection_is_closed();
   void connect();
   void disconnect();
   unique_ptr<ResultSet> query(string q);

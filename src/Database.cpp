@@ -12,15 +12,22 @@ void Database::exception(SQLException &e){
   exit(1);
 }
 
+bool Database::connection_is_closed(){
+  if(con != nullptr){
+    lock_guard<mutex> lock(db_mutex);
+    return con->isClosed();
+  }else{
+    return true;
+  }
+}
+
 unique_ptr<ResultSet> Database::query(string q){
   try{
-    db_mutex.lock();
-    if(con == nullptr || con->isClosed()){
+    if(connection_is_closed())
       connect();
-    }
-    db_mutex.unlock();
     log("query: " + q);
-    return unique_ptr<ResultSet>(stmt->executeQuery(q));
+    { lock_guard<mutex> lock(db_mutex);
+      return unique_ptr<ResultSet>(stmt->executeQuery(q)); }
   }catch(SQLException &e){
     exception(e);
   }
@@ -28,13 +35,11 @@ unique_ptr<ResultSet> Database::query(string q){
 
 void Database::execute(string q){
   try{
-    db_mutex.lock();
-    if(con == nullptr || con->isClosed()){
+    if(connection_is_closed())
       connect();
-    }
     log("execute: " + q);
-    stmt->execute(q);
-    db_mutex.unlock();
+    { lock_guard<mutex> lock(db_mutex);
+      stmt->execute(q); }
   }catch(SQLException &e){
     exception(e);
   }
@@ -61,11 +66,9 @@ bool Database::table_exists(string table){
 }
 
 void Database::connect(){
-  { lock_guard<mutex> lock(db_mutex);
-    if(!(con == nullptr || con->isClosed()))
-      return;
-  }
-    
+  if(!connection_is_closed())
+    return;
+
   if(password == ""){
     if(getenv("TASKLIB") == nullptr){
       Uservalue uv({"Podaj hasło:"}, false);
@@ -76,18 +79,14 @@ void Database::connect(){
   }
   
   try{
-    db_mutex.lock();
-    driver = get_driver_instance();
-    con = unique_ptr<Connection>(driver->connect("tcp://5.189.166.138:443", "task", password));
-    con->setSchema("task");
-    stmt = unique_ptr<Statement>(con->createStatement());
-    db_mutex.unlock();
-    unique_ptr<ResultSet> res(query("SELECT 'Ustanowiłem połączenie z bazą danych' AS message"));
-    db_mutex.lock();
-    while(res->next()){
+    { lock_guard<mutex> lock(db_mutex);
+      driver = get_driver_instance();
+      con = unique_ptr<Connection>(driver->connect("tcp://5.189.166.138:443", "task", password));
+      con->setSchema("task");
+      stmt = unique_ptr<Statement>(con->createStatement()); }
+    auto res = query("SELECT 'Ustanowiłem połączenie z bazą danych' AS message");
+    while(res->next())
       log(res->getString("message"));
-    }
-    db_mutex.unlock();
     execute("SET NAMES utf8;");
   }catch(SQLException &e){
     exception(e);
@@ -95,14 +94,12 @@ void Database::connect(){
 }
 
 void Database::disconnect(){
-  db_mutex.lock();
-  if(!(con == nullptr || con->isClosed())){
-    if(con != nullptr)
-      log("Zamykam połączenie z bazą danych");
+  if(!connection_is_closed()){
+    log("Zamykam połączenie z bazą danych");
+    lock_guard<mutex> lock(db_mutex);
     con->close();
     con = nullptr;
   }
-  db_mutex.unlock();
 }
 
 Database::~Database(){
