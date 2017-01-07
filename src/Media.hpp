@@ -7,6 +7,7 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include "States.hpp"
+#include "Ptype.hpp"
 using namespace std;
 using namespace sf;
 

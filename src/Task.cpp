@@ -127,7 +127,6 @@ bool Task::measure_key_reaction(const vector<int>& response_keys, int& response,
     rt = keyp(response_keys[i]) - start;
     if(rt > 0){
       response = i;
-      set_trial_data({{"resp", response}, {"rt", rt}});
       return true;
     }
   }

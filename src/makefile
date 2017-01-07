@@ -8,7 +8,7 @@ COMMON= Common.hpp Utils.hpp Log.hpp
 
 Task.o: Task.cpp *.hpp
 
-Media.o: Timer.hpp
+Media.o: Timer.hpp Ptype.hpp
 
 Datasaver.o: Database.hpp
 

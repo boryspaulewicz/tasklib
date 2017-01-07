@@ -10,9 +10,6 @@ void Media::init(){
   win = unique_ptr<RenderWindow>(new RenderWindow(VideoMode().getDesktopMode(), "Task", Style::Fullscreen));
   win->setVerticalSyncEnabled(true);
   win->setMouseCursorVisible(false);
-  win->clear();
-  win->display();
-  while(win->pollEvent(event)){}
   
   white_on_black();
 
@@ -33,6 +30,12 @@ void Media::init(){
   text.setFont(font);
   text.setCharacterSize((float)height * 0.05);
 
+  // To wydaje siê eliminowaæ b³±d "Failed to open BO for returned
+  // DRI2 buffer"
+  while(win->pollEvent(event)){}
+  auto small_break = time_ms();
+  auto cfg = read_cfg("cfg.txt", false);
+  while((time_ms() - small_break) < (cfg.count("media_delay_ms") == 1 ? (int)cfg["media_delay_ms"] : 200)){}
 }
 
 void Media::close(){

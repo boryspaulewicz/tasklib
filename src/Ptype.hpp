@@ -108,6 +108,6 @@ string operator+(string lhs, Ptype& rhs);
 string operator+(const char* lhs, Ptype& rhs);
 string operator+(Ptype& lhs, const char* rhs);
 
-map<string, Ptype> read_cfg(string fname);
+map<string, Ptype> read_cfg(string fname, bool must_exist = true);
 
 #endif

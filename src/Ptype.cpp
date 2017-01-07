@@ -32,7 +32,7 @@ string operator+(const char* lhs, Ptype& rhs){ return string(lhs) + (string)rhs;
 
 string operator+(Ptype& lhs, const char* rhs){ return (string)lhs + string(rhs); }
 
-map<string, Ptype> read_cfg(string fname){
+map<string, Ptype> read_cfg(string fname, bool must_exist){
   map<string, Ptype> res;
   ifstream f;
   f.open(fname);
@@ -42,7 +42,12 @@ map<string, Ptype> read_cfg(string fname){
       f >> res[var];
     }
   }else{
-    throw(runtime_error("Nie znalaz³em pliku " + fname));
+    auto msg = "Nie znalaz³em pliku konfiguracyjnego " + fname;
+    if(must_exist){
+      throw(runtime_error(msg));
+    }else{
+      log(msg);
+    }
   }
   return res;
 }

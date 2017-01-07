@@ -12,7 +12,7 @@ export CXXFLAGS LDFLAGS
 
 ## $(tgz) na koñcu, bo wersja spakowana musi byæ najpierw
 ## zaktualizowana
-TASKS:= stroop posner sternberg test $(tgz)
+TASKS:= ablink stroop posner sternberg test $(tgz)
 
 .PHONY: $(TASKS) $(tgz)
 
