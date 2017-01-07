@@ -60,7 +60,6 @@ protected:
   map<string, Ptype> trial_data;
 
   void register_session();
-
   void mark_session_finished();
 
   void set_trial_data(string name, Ptype value){ trial_data[name] = value; }
@@ -70,17 +69,13 @@ protected:
 
  public:
 
-  bool use_db = true;
   static Database db;
 
   inline void display();
 
   friend void get_sha_data();
-  
   friend void set_project_name(string project);
-
-  friend void get_user_data(string instruction);
-
+  friend void get_user_data(string instruction = "");
   friend string get_random_condition(string task_name, vector<string> conditions = {});
 
   Ptype get_session_data(string name);
@@ -116,16 +111,14 @@ void Task::display(){
   Media::display();
 }
 
+extern string user_data_instr;
+extern string session_over_instr;
+
 vector<int> vseq(int from, int to);
-
 int random_int(int min, int max);
-
 void get_sha_data();
-
 void set_project_name(string project);
-
 void get_user_data(string fname);
-
 string get_random_condition(string task_name, vector<string> conditions);
 
 #endif

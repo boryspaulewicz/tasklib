@@ -12,6 +12,18 @@ bool Task::sha_data_initialized = false;
 #define LIB_SHA "lib_sha"
 #define PROJECT_SHA "project_sha"
 
+string user_data_instr = "W czasie eksperymentu obowiązuje cisza. Wyłącz telefon komórkowy. "
+  "W razie jakichkolwiek wątpliwości nie wołaj osoby prowadzącej, tylko podnieś do góry rękę. "
+  "Osoba prowadząca podejdzie w dogodnym momencie i postara się udzielić wszelkich wyjaśnień. "
+  "Badanie jest anonimowe.\n\n"
+  "Za chwilę zostaniesz poproszona/y o podanie danych: wieku, płci oraz identyfikatora. "
+  "Identyfikator składa się z inicjałów (małymi literami) oraz czterech cyfr: dnia i miesiąca urodzenia (np. ms0706). "
+  "Zwróć uwagę, że identyfikator składa się dokładnie z 6 znaków, a między inicjałami i dniem i miesiącem urodzenia nie ma spacji.";
+
+string session_over_instr = "To już koniec eksperymentu. Dziękujemy za udział.\n\n"
+  "Poczekaj na swoim miejscu i zachowaj ciszę, osoba prowadząca badanie podejdzie do Ciebie"
+  " w dogodnym momencie i poinformuje Cię o dalszym postępowaniu.";
+
 void get_sha_data(){
   if(Task::sha_data_initialized)
     return;
@@ -45,6 +57,8 @@ void set_project_name(string project){
 
 void get_user_data(string instr){
   if(!Task::user_data_initialized){
+    if(instr == "")
+      instr = user_data_instr;
     log("Pobieram dane osobowe");
     Instruction in(instr);
     Userdata ud;
@@ -164,14 +178,15 @@ void Task::run(){
   if(!initialized)
     throw(runtime_error("Wywołano funkcję run, ale zadanie nie zostało zainicjalizowane"));
 
-  cs = unique_ptr<Conditions>(new Conditions(design));
   srand(time(NULL));
-  scen = unique_ptr<Scenario>(new Scenario(cs->nof_cnds, b, n));
+
+  cs = unique_ptr<Conditions>(new Conditions(design));
   if(nof_trials == 0){
-    nof_trials = scen->size();
-  }else if(nof_trials > scen->size()){
-    throw(std::runtime_error("Liczba prób większa niż długość scenariusza"));
+    nof_trials = cs->nof_cnds * b * n;
+  }else if(nof_trials > (cs->nof_cnds * b * n)){
+    b = ceil((float)nof_trials / (cs->nof_cnds * n));
   }
+  scen = unique_ptr<Scenario>(new Scenario(cs->nof_cnds, b, n));
 
   log("Długość zadania: " + to_string(nof_trials));
   cs->print();

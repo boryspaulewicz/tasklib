@@ -10,7 +10,7 @@ void send_data(Database* db, string task_name, int session_id, map<string, Ptype
         cols.insert(desc->getString(1));
       for(auto& x : trial_data)
         if(cols.find(x.first) == cols.end())
-          db->execute("ALTER TABLE ADD " + x.first + " " + x.second.sql_type() + ";");
+          db->execute("ALTER TABLE " + table_name + " ADD " + x.first + " " + x.second.sql_type() + ";");
     }else{
       string q("CREATE TABLE " + table_name + "(timestamp TIMESTAMP, session_id INT(11) NOT NULL, ");
       for(auto& x : trial_data)

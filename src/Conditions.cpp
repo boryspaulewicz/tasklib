@@ -33,11 +33,14 @@ void Conditions::print(){
     msg += f.first + ":";
     for(auto& l : f.second)
       msg += " " + l;
+    msg += "\n";
   }
   log(msg);
   msg = "Warunki zadania:\n";
-  for(int c = 0; c < nof_cnds; c++)
+  for(int c = 0; c < nof_cnds; c++){
     for(auto& f : names)
       msg += (string)get(f, c) + " ";
+    msg += "\n";
+  }
   log(msg);
 }

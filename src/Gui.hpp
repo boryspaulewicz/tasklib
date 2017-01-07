@@ -30,6 +30,10 @@ bool rmatch(string pattern, string str);
 
 string load_from_file(string fname);
 
+namespace Gui{
+  extern Main m;
+}
+
 class Taskwindow : public Gtk::Window{
 public:
   
