@@ -62,12 +62,18 @@ protected:
   void register_session();
   void mark_session_finished();
 
-  void set_trial_data(string name, Ptype value){ trial_data[name] = value; }
-  void set_trial_data(initializer_list<pair<string, Ptype> >values){ for(auto& v : values)trial_data[v.first] = v.second; }
+  void set_trial_data(string name, Ptype value){
+    if(trial_data.count(name) == 1)
+      throw(runtime_error("set_trial_data: niedozwolona nazwa zmiennej: " + name));
+    trial_data[name] = value;
+  }
+  void set_trial_data(initializer_list<pair<string, Ptype> >values){ for(auto& v : values)set_trial_data(v.first, v.second); }
   
   Ptype cnd(string f){ return cs->get(f, scen->get(current_trial)); }
 
  public:
+
+  static map<string, vector<string> > get_unfinished_sessions(string taskname, map<string, Ptype>& session_data);
 
   static Database db;
 

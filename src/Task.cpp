@@ -110,6 +110,19 @@ Ptype Task::get_session_data(string name){
   return session_data[name];
 }
 
+map<string, vector<string> > Task::get_unfinished_sessions(string taskname, map<string, Ptype>& session_data){
+    map<string, Ptype> data;
+    for(auto& v : {"name", "age", "gender"})
+      data[v] = session_data[v];
+    auto res = Task::db.query("SELECT session_id, cnd, time FROM session WHERE stage = 'started' AND task = '" + taskname +
+                              "' AND " + Task::db.match_statement(data) + ";");
+    map<string, vector<string> > tbl;
+    while(res->next())
+      for(auto& v : {"session_id", "cnd", "time"})
+        tbl[v].push_back(res->getString(v));
+    return tbl;
+}
+
 void Task::register_session(){
   if(user_data_initialized){
     log("Rejestruję sesję");
@@ -202,6 +215,7 @@ void Task::run(){
 
     trial_data.clear();
     trial_data["trial"] = current_trial;
+    trial_data["cnd_num"] = (int)scen->get(current_trial);
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
     unique_ptr<Datasaver> data_saver;
@@ -209,8 +223,9 @@ void Task::run(){
     TRIAL_IS_OVER = false;
     set_state(0);
     while(!TRIAL_IS_OVER && (keyp(KEYESCAPE) <= task_start)){
-      trial_code(state());
       process_events(event);
+      set_active();
+      trial_code(state());
     }
     log("Próba zakończona");
 

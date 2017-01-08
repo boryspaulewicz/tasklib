@@ -45,6 +45,17 @@ void Database::execute(string q){
   }
 }
 
+string Database::match_statement(map<string, Ptype>& d){
+  string res;
+  auto it = d.begin();
+  while(it != d.end()){
+    res += it->first + " = " + it->second.sql_val();
+    if(++it != d.end())
+      res += " AND ";
+  }
+  return res;
+}
+
 string Database::insert_statement(string table, map<string, Ptype>& d){
   stringstream cols, vals;
   for(auto x = d.begin(); x != d.end(); x++){

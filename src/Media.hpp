@@ -24,6 +24,7 @@ protected:
   
 public:
 
+  void set_active(){ win->setActive(); }
   void display(){ win->display(); }
   void clear(const Color& color = Color(0, 0, 0, 255)){ win->clear(color); }
   void draw(const Drawable &drawable){ win->draw(drawable); }
