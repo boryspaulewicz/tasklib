@@ -46,3 +46,8 @@ timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 KEY (session_id), -- pomijamy nazwę, automatycznie przydzieli session_id
 FOREIGN KEY (session_id) REFERENCES session (session_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+
+CREATE TABLE IF NOT EXISTS projects (
+name VARCHAR(100) COLLATE utf8_polish_ci NOT NULL,
+description VARCHAR(1000) COLLATE utf8_polish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
