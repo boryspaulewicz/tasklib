@@ -41,7 +41,7 @@ using namespace sf;
 #ifdef PROJECT_SHA
   string project_sha = PROJECT_SHA;
 #else
-  extern string project_sha = PROJECT_SHA;
+  extern string project_sha;
 #endif
 
 class Task : public Media{
