@@ -8,10 +8,6 @@ map<string, Ptype> Task::session_data;
 #define SESSION_ID_UNINITIALIZED -1
 int Task::session_id = SESSION_ID_UNINITIALIZED;
 bool Task::user_data_initialized = false;
-bool Task::sha_data_initialized = false;
-
-#define LIB_SHA "lib_sha"
-#define PROJECT_SHA "project_sha"
 
 string user_data_instr = "W czasie eksperymentu obowiązuje cisza. Wyłącz telefon komórkowy. "
   "W razie jakichkolwiek wątpliwości nie wołaj osoby prowadzącej, tylko podnieś do góry rękę. "
@@ -25,32 +21,32 @@ string session_over_instr = "To już koniec eksperymentu. Dziękujemy za udział
   "Poczekaj na swoim miejscu i zachowaj ciszę, osoba prowadząca badanie podejdzie do Ciebie"
   " w dogodnym momencie i poinformuje Cię o dalszym postępowaniu.";
 
-void get_sha_data(){
-  if(Task::sha_data_initialized)
-    return;
-  ifstream f;
-  f.open(LIB_SHA);
-  string value;
-  if(f.good()){
-    getline(f, value);
-    if(value.size() != 40)
-      throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
-    Task::session_data["lib_sha"] = value;
-  }else{
-    log("Nie znalazłem pliku " LIB_SHA ".");
-  }
-  f.close();
-  f.open(PROJECT_SHA);
-  if(f.good()){
-    getline(f, value);
-    if(value.size() != 40)
-      throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
-    Task::session_data["project_sha"] = value;
-  }else{
-    log("Nie znalazłem pliku" PROJECT_SHA);
-  }
-  Task::sha_data_initialized = true;
-}
+// void get_sha_data(){
+//   if(Task::sha_data_initialized)
+//     return;
+//   ifstream f;
+//   f.open(LIB_SHA);
+//   string value;
+//   if(f.good()){
+//     getline(f, value);
+//     if(value.size() != 40)
+//       throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
+//     Task::session_data["lib_sha"] = value;
+//   }else{
+//     log("Nie znalazłem pliku " LIB_SHA ".");
+//   }
+//   f.close();
+//   f.open(PROJECT_SHA);
+//   if(f.good()){
+//     getline(f, value);
+//     if(value.size() != 40)
+//       throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
+//     Task::session_data["project_sha"] = value;
+//   }else{
+//     log("Nie znalazłem pliku" PROJECT_SHA);
+//   }
+//   Task::sha_data_initialized = true;
+// }
 
 void set_project_name(string project){
   log("Nazwa projektu: " + project);
@@ -241,7 +237,8 @@ void Task::run(){
   log("Długość zadania: " + to_string(nof_trials));
   cs->print();
 
-  get_sha_data();
+  session_data["lib_sha"] = lib_sha;
+  session_data["project_sha"] = project_sha;
   if(use_db){
     Task::db.connect();
     if(session_id == SESSION_ID_UNINITIALIZED)

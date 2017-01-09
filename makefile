@@ -24,7 +24,7 @@ clear:
 	rm -f libtask.a $(OBJS) $(UTILS) \
 
 libtask.a: $(OBJS:o=cpp) $(OBJS:o=hpp)
-	cd src; make
+	cd src; git commit -a -v || true; make CXXFLAGS=$(CXXFLAGS) -DLIB_SHA="$(shell git rev-parse HEAD)"
 	ar rv $@ $(OBJS)
 
 project: project.cpp libtask.a
@@ -32,7 +32,7 @@ project: project.cpp libtask.a
 tests: tests.cpp libtask.a
 
 $(TASKS):
-	cd ../$@; make start
+	cd ../$@; git commit -a -v || true; make start CXXFLAGS=$(CXXFLAGS) -DPROJECT_SHA="$(shell git rev-parse HEAD)"
 
 $(tgz):
 	git commit -a -v || true; \

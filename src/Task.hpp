@@ -32,6 +32,18 @@ using namespace sf;
 #include "Media.hpp"
 #include "Timer.hpp"
 
+#ifdef LIB_SHA
+  string lib_sha = LIB_SHA;
+#else
+  extern string lib_sha = LIB_SHA;
+#endif
+
+#ifdef PROJECT_SHA
+  string project_sha = PROJECT_SHA;
+#else
+  extern string project_sha = PROJECT_SHA;
+#endif
+
 class Task : public Media{
 
 private:
@@ -56,7 +68,7 @@ protected:
   static int session_id;
   static map<string, Ptype> session_data;
   static bool user_data_initialized;
-  static bool sha_data_initialized;
+  // static bool sha_data_initialized;
   map<string, Ptype> trial_data;
 
   void register_session();
