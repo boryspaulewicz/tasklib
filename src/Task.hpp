@@ -35,11 +35,11 @@ using namespace sf;
 #ifdef LIB_SHA
   string lib_sha = LIB_SHA;
 #else
-  extern string lib_sha = LIB_SHA;
+  extern string lib_sha = #LIB_SHA;
 #endif
 
 #ifdef PROJECT_SHA
-  string project_sha = PROJECT_SHA;
+  string project_sha = #PROJECT_SHA;
 #else
   extern string project_sha;
 #endif
