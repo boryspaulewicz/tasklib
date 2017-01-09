@@ -1,6 +1,8 @@
 ## make tgz=test utworzy archiwum projektu test z plikami sha.
 tgz=
 
+SHA_FLAGS= -DLIB_SHA="dev" -DPROJECT_SHA="dev"
+
 CXXFLAGS= -O3 -finline-functions -std=c++11 -g -O3 -I../tasklib/src `pkg-config gtkmm-3.0 --cflags`
 
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
@@ -24,20 +26,23 @@ clear:
 	rm -f libtask.a $(OBJS) $(UTILS) \
 
 libtask.a: $(OBJS:o=cpp) $(OBJS:o=hpp)
-	cd src; git commit -a -v || true; make "CXXFLAGS=$(CXXFLAGS) -DLIB_SHA=\"$(shell git rev-parse HEAD)\""
+	cd src; make
 	ar rv $@ $(OBJS)
 
 project: project.cpp libtask.a
+	g++ $^ -o $@ $(CXXFLAGS) $(SHA_FLAGS) $(LDFLAGS)
 
 tests: tests.cpp libtask.a
+	g++ $^ -o $@ $(CXXFLAGS) $(SHA_FLAGS) $(LDFLAGS)
 
 $(TASKS):
-	cd ../$@; git commit -a -v || true; \
-	make start CXXFLAGS="$(CXXFLAGS) -DPROJECT_SHA=\"$(shell cd ../$@; git rev-parse HEAD)\""
+	cd ../$@; make start CXXFLAGS="$(CXXFLAGS) $(SHA_FLAGS)"
 
 $(tgz):
-	cd ../$@/; \
-	rm -f start.tgz; \
+	git commit -a -v || true; \
+	cd ../$@; rm -f start start.tgz; \
+	make start CXXFLAGS="$(CXXFLAGS) -DLIB_SHA=\"$(shell cd ../tasklib; git rev-parse HEAD)\" -DPROJECT_SHA=\"$(shell cd ../$@; git rev-parse HEAD)\""
+	git commit -a -v || true; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
 	../tasklib/project register $@
