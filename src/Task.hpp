@@ -32,16 +32,19 @@ using namespace sf;
 #include "Media.hpp"
 #include "Timer.hpp"
 
+#define STRINGIFY(s) PRE_STRINGIFY(s)
+#define PRE_STRINGIFY(s) #s
+
 #ifdef LIB_SHA
-  string lib_sha = LIB_SHA;
+string lib_sha = STRINGIFY(LIB_SHA);
 #else
-  extern string lib_sha = #LIB_SHA;
+extern string lib_sha;
 #endif
 
 #ifdef PROJECT_SHA
-  string project_sha = #PROJECT_SHA;
+string project_sha = STRINGIFY(PROJECT_SHA);
 #else
-  extern string project_sha;
+extern string project_sha;
 #endif
 
 class Task : public Media{
