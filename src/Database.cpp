@@ -3,6 +3,8 @@
 #include "Database.hpp"
 #include "Gui.hpp"
 
+#define DATABASE_NAME "task2"
+
 void Database::exception(SQLException &e){
   log("# ERR: SQLException in " +
       string(__FILE__) + "(" + string(__FUNCTION__) + ") on line " +
@@ -56,7 +58,7 @@ string Database::match_statement(map<string, Ptype>& d){
   return res;
 }
 
-string Database::insert_statement(string table, map<string, Ptype>& d){
+string Database::insert_statement(string table, map<string, Ptype> d){
   stringstream cols, vals;
   for(auto x = d.begin(); x != d.end(); x++){
     cols << x->first;
@@ -71,8 +73,8 @@ string Database::insert_statement(string table, map<string, Ptype>& d){
 
 bool Database::table_exists(string table){
   execute("USE information_schema");
-  auto res = query("SELECT * FROM TABLES WHERE TABLE_SCHEMA = 'task' AND TABLE_NAME = '" + table + "';");
-  execute("USE task;");
+  auto res = query("SELECT * FROM TABLES WHERE TABLE_SCHEMA = '" DATABASE_NAME "' AND TABLE_NAME = '" + table + "';");
+  execute("USE " DATABASE_NAME ";");
   return res->next();
 }
 
@@ -93,7 +95,7 @@ void Database::connect(){
     { lock_guard<mutex> lock(db_mutex);
       driver = get_driver_instance();
       con = unique_ptr<Connection>(driver->connect("tcp://5.189.166.138:443", "task", password));
-      con->setSchema("task");
+      con->setSchema(DATABASE_NAME);
       stmt = unique_ptr<Statement>(con->createStatement()); }
     auto res = query("SELECT 'Ustanowiłem połączenie z bazą danych' AS message");
     while(res->next())

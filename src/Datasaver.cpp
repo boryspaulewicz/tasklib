@@ -1,7 +1,6 @@
 #include "Datasaver.hpp"
 
-void send_data(Database* db, string task_name, int session_id, map<string, Ptype> session_data, map<string, Ptype> trial_data){
-  string table_name = task_name + "_data";
+void send_data(Database* db, string table_name, int session_id, map<string, Ptype> session_data, map<string, Ptype> trial_data){
   if(trial_data["trial"] == 0){
     if(db->table_exists(table_name)){
       auto desc = db->query("DESCRIBE " + table_name + ";");
@@ -12,21 +11,20 @@ void send_data(Database* db, string task_name, int session_id, map<string, Ptype
         if(cols.find(x.first) == cols.end())
           db->execute("ALTER TABLE " + table_name + " ADD " + x.first + " " + x.second.sql_type() + ";");
     }else{
-      string q("CREATE TABLE " + table_name + "(timestamp TIMESTAMP, session_id INT(11) NOT NULL, ");
+      string q("CREATE TABLE " + table_name + "(session_id INT(11) NOT NULL, timestamp TIMESTAMP, ");
       for(auto& x : trial_data)
         q += x.first + " " + x.second.sql_type() + ",";
-      q += "KEY session_id (session_id), FOREIGN KEY (session_id) REFERENCES session (session_id)"
-        " ON DELETE CASCADE ON UPDATE CASCADE);";
+      q += "KEY (session_id), FOREIGN KEY (session_id) REFERENCES session (session_id) ON DELETE CASCADE);";
       db->execute(q);
     }
   }
   trial_data["session_id"] = session_id;
-  db->execute(db->insert_statement(task_name + "_data", trial_data));
+  db->execute(db->insert_statement(table_name, trial_data));
 }
 
-Datasaver::Datasaver(Database* db, string& task_name, int& session_id, map<string, Ptype>& session_data,
+Datasaver::Datasaver(Database* db, string& table_name, int& session_id, map<string, Ptype>& session_data,
                      map<string, Ptype>& trial_data){
-  send_data_thread = new thread(send_data, db, task_name, session_id, session_data, trial_data);
+  send_data_thread = new thread(send_data, db, table_name, session_id, session_data, trial_data);
 }
 
 Datasaver::~Datasaver(){

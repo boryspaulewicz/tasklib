@@ -5,7 +5,8 @@
 // Elementy wspólne dla wszystkich zadań
 Database Task::db;
 map<string, Ptype> Task::session_data;
-int Task::session_id;
+#define SESSION_ID_UNINITIALIZED -1
+int Task::session_id = SESSION_ID_UNINITIALIZED;
 bool Task::user_data_initialized = false;
 bool Task::sha_data_initialized = false;
 
@@ -52,6 +53,7 @@ void get_sha_data(){
 }
 
 void set_project_name(string project){
+  log("Nazwa projektu: " + project);
   Task::session_data["project"] = project;
 }
 
@@ -60,32 +62,35 @@ void get_user_data(string instr){
     log("Pobieram dane osobowe");
     Instruction in(instr);
     Userdata ud;
-    for(auto& v : {"name", "gender"})
+    for(auto& v : {"subject", "gender"})
       Task::session_data[v] = ud.data[v];
     Task::session_data["age"] = stoi(ud.data["age"]);
     Task::user_data_initialized = true;
+  }else{
+    log("Dane osobowe są utalone");
   }
 }
 
-string get_random_condition(string task_name, vector<string> conditions){
+string get_random_condition(string project, vector<string> conditions){
+  log("Ustalam losowy warunek");
   // liczebności również warunków, które jeszcze nie wystąpiły w bazie
   // (wtedy = 0)
   map<string, int> counts;
   for(auto c : conditions)
     counts[c] = 0;
-  auto res = Task::db.query("SELECT cnd, COUNT(*) FROM session WHERE task = '" + task_name +
-                            "' AND stage = 'finished' AND name != 'admin' GROUP BY cnd;");
+  auto res = Task::db.query("SELECT cnd, COUNT(*) FROM session WHERE project = '" + project +
+                            "' AND stage = 'finished' AND subject != 'admin' GROUP BY cnd;");
   while(res->next()){
     counts[res->getString(1)] = res->getInt(2);
     conditions.push_back(res->getString(1));
   }
   
-  log("Liczba sesji na warunek " + task_name + ":");
+  log("Liczba sesji na warunek " + project + ":");
   for(auto c : counts)
     log(c.first + ": " + to_string(c.second));
 
   string chosen;
-  if(Task::session_data["name"] == "admin"){
+  if(Task::session_data["subject"] == "admin"){
     Chooseitem ci(conditions, "Wybór administratora");
     chosen = ci.value;
   }else{
@@ -110,21 +115,27 @@ Ptype Task::get_session_data(string name){
   return session_data[name];
 }
 
-map<string, vector<string> > Task::get_unfinished_sessions(string taskname, map<string, Ptype>& session_data){
-    map<string, Ptype> data;
-    for(auto& v : {"name", "age", "gender"})
-      data[v] = session_data[v];
-    auto res = Task::db.query("SELECT session_id, cnd, time FROM session WHERE stage = 'started' AND task = '" + taskname +
-                              "' AND " + Task::db.match_statement(data) + ";");
-    map<string, vector<string> > tbl;
-    while(res->next())
-      for(auto& v : {"session_id", "cnd", "time"})
-        tbl[v].push_back(res->getString(v));
-    return tbl;
-}
+// map<string, vector<string> > Task::get_unfinished_sessions(string taskname, map<string, Ptype>& session_data){
+//     map<string, Ptype> data;
+//     for(auto& v : {"subject", "age", "gender"})
+//       data[v] = session_data[v];
+//     auto res = Task::db.query("SELECT session_id, cnd, timestamp FROM session WHERE stage = 'started' AND project = '" + taskname +
+//                               "' AND " + Task::db.match_statement(data) + ";");
+//     map<string, vector<string> > tbl;
+//     while(res->next())
+//       for(auto& v : {"session_id", "cnd", "time"})
+//         tbl[v].push_back(res->getString(v));
+//     return tbl;
+// }
 
 void Task::register_session(){
   if(user_data_initialized){
+    if(session_id != SESSION_ID_UNINITIALIZED){
+      log("Sesja jest już zarejestrowana");
+      return;
+    }
+    if(session_data.count("project") == 0)
+      throw(runtime_error("Próba zarejestrowania sesji bez podania nazwy projektu"));
     log("Rejestruję sesję");
     Task::db.execute(Task::db.insert_statement("session", session_data));
     auto r = Task::db.query("SELECT LAST_INSERT_ID();");
@@ -133,6 +144,12 @@ void Task::register_session(){
   }else{
     throw(runtime_error("Brak danych osobowych, nie mogę zarejestrować tej sesji."));
   }
+}
+
+void Task::register_task(){
+  log("Rejestruję zadanie");
+  Task::db.execute(Task::db.insert_statement("session_tables", {{"session_id", session_id},
+          {"table_name", table_name}, {"stage", "started"}}));
 }
 
 bool Task::measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start){
@@ -152,33 +169,55 @@ bool Task::task_is_finished(){
   return finished;
 }
 
-void Task::mark_session_finished(){
-  Task::db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(session_id) + ";");
+void Task::mark_task_finished(){
+  log("Zmieniam status zadania na ukończone");
+  Task::db.execute("UPDATE session_tables SET stage = \"finished\" WHERE table_name = '" + table_name + "'"
+                   " AND session_id = " + to_string(session_id) + ";");
 }
 
-void Task::run(string task_name, vector<pair<string, vector<Ptype> > > design,
+void update_session_status(vector<string> table_names){
+  bool session_finished = true;
+  log("Ustalam status sesji");
+  for(auto& table_name : table_names){
+    auto res = Task::db.query("SELECT stage FROM session_tables WHERE session_id = " + to_string(Task::session_id) + ";");
+    if(res->next()){
+      if(res->getString(1) != "finished")
+        session_finished = false;
+    }else{
+      session_finished = false;
+    }
+  }
+  if(session_finished){
+    log("Zmieniam status sesji na ukończona");
+    Task::db.execute("UPDATE session SET stage = \"finished\" WHERE session_id = " + to_string(Task::session_id) + ";");
+  }else{
+    log("Sesja nie została ukończona");
+  }
+}
+
+void Task::run(string table_name, vector<pair<string, vector<Ptype> > > design,
                unsigned int b, unsigned int n, unsigned int nof_trials,
                unsigned int max_task_time){
-  init(task_name, design, b, n, nof_trials, max_task_time);
+  init(table_name, design, b, n, nof_trials, max_task_time);
   run();
 }
 
-void Task::init(string task_name_, vector<pair<string, vector<Ptype> > > design_,
+void Task::init(string table_name_, vector<pair<string, vector<Ptype> > > design_,
                 unsigned int b_, unsigned int n_, unsigned int nof_trials_,
                 unsigned int max_task_time_){
-  task_name = task_name_; design = design_;
+  table_name = table_name_; design = design_;
   b = b_; n = n_; nof_trials = nof_trials_;
   max_task_time = max_task_time_;
-    
+  log("Inicjalizuję zadanie");
+
   if(getenv("TASKLIB_NODB") != nullptr)
     use_db = false;
 
   if(getenv("TASKLIB_DEBUG") != nullptr)
     debug = true;
 
-  if(task_name == "")
-    throw(runtime_error("Nie podano nazwy zadania"));
-  session_data["task"] = task_name;
+  if(table_name == "")
+    throw(runtime_error("Nie podano nazwy tabeli danych"));
 
   initialized = true;
   finished = false;
@@ -187,7 +226,8 @@ void Task::init(string task_name_, vector<pair<string, vector<Ptype> > > design_
 void Task::run(){
   if(!initialized)
     throw(runtime_error("Wywołano funkcję run, ale zadanie nie zostało zainicjalizowane"));
-
+  log("Uruchamiam zadanie");
+  
   srand(time(NULL));
 
   cs = unique_ptr<Conditions>(new Conditions(design));
@@ -204,7 +244,9 @@ void Task::run(){
   get_sha_data();
   if(use_db){
     Task::db.connect();
-    register_session();
+    if(session_id == SESSION_ID_UNINITIALIZED)
+      register_session();
+    register_task();
   }
 
   Media::init();
@@ -223,16 +265,16 @@ void Task::run(){
     TRIAL_IS_OVER = false;
     set_state(0);
     while(!TRIAL_IS_OVER && (keyp(KEYESCAPE) <= task_start)){
-      process_events(event);
-      set_active();
+      // set_active();
       trial_code(state());
+      process_events(event);
     }
     log("Próba zakończona");
 
     if(keyp(KEYESCAPE) <= task_start){
       if(use_db){
         log("Zapisuję dane");
-        data_saver = unique_ptr<Datasaver>(new Datasaver(&db, task_name, session_id, session_data, trial_data));
+        data_saver = unique_ptr<Datasaver>(new Datasaver(&db, table_name, session_id, session_data, trial_data));
       }else{
         string msg = "Dane z próby:\n";
         for(auto& d : trial_data)
@@ -246,7 +288,7 @@ void Task::run(){
 
   if(use_db){
     if(task_is_finished())
-      mark_session_finished();
+      mark_task_finished();
     Task::db.disconnect();
   }
 

@@ -46,7 +46,7 @@ protected:
   int b, n;
   unsigned int nof_trials;
   unsigned int max_task_time;
-  string task_name;
+  string table_name;
   bool initialized = false, finished = false;
   
   unique_ptr<Conditions> cs;
@@ -60,8 +60,10 @@ protected:
   map<string, Ptype> trial_data;
 
   void register_session();
-  void mark_session_finished();
-
+  void register_task();
+  void mark_task_finished();
+  friend void update_session_status(vector<string> table_names);
+  
   void set_trial_data(string name, Ptype value){
     if(trial_data.count(name) == 1)
       throw(runtime_error("set_trial_data: niedozwolona nazwa zmiennej: " + name));
@@ -126,5 +128,6 @@ void get_sha_data();
 void set_project_name(string project);
 void get_user_data(string fname);
 string get_random_condition(string task_name, vector<string> conditions);
+void update_session_status(vector<string> table_names);
 
 #endif

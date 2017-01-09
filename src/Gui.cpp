@@ -54,7 +54,7 @@ void Userdata::button_pressed(){
     return;
   }
   if(trim(name.get_text()) == "admin"){
-    data["name"] = "admin";
+    data["subject"] = "admin";
     data["age"] = "0";
     data["gender"] = "M";
     log("Podano identyfikator administratora");
@@ -68,7 +68,7 @@ void Userdata::button_pressed(){
     msg.run();
     return;
   }
-  data["name"] = trim(name.get_text());
+  data["subject"] = trim(name.get_text());
 
   if(trim(age.get_text()) == string("")){
     MessageDialog msg(*this, "Brak danych w polu Wiek");

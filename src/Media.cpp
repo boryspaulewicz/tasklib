@@ -34,9 +34,9 @@ void Media::init(){
   // DRI2 buffer"
   // while(win->pollEvent(event)){}
   // win->setActive(); // to nie wystarcza
-  // auto small_break = time_ms();
-  // auto cfg = read_cfg("cfg.txt", false);
-  // while((time_ms() - small_break) < (cfg.count("media_delay_ms") == 1 ? (int)cfg["media_delay_ms"] : 200)){}
+  auto small_break = time_ms();
+  auto cfg = read_cfg("cfg.txt", false);
+  while((time_ms() - small_break) < (cfg.count("media_delay_ms") == 1 ? (int)cfg["media_delay_ms"] : 200)){}
 }
 
 void Media::close(){

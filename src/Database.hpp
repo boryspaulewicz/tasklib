@@ -43,7 +43,7 @@ public:
   void execute(string q);
   void register_session();
   string match_statement(map<string, Ptype>& d);
-  string insert_statement(string table, map<string, Ptype>& d);
+  string insert_statement(string table, map<string, Ptype> d);
   bool table_exists(string table);
   
   ~Database();
