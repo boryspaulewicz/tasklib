@@ -1,5 +1,5 @@
 ## make tgz=test utworzy archiwum projektu test z plikami sha.
-tgz=
+release=
 
 SHA_FLAGS= -DLIB_SHA="dev" -DPROJECT_SHA="dev"
 
@@ -12,15 +12,15 @@ OBJS:= $(addprefix ./src/,$(OBJS))
 
 export CXXFLAGS LDFLAGS
 
-## $(tgz) na koñcu, bo wersja spakowana musi byæ najpierw
+## $(release) na koñcu, bo wersja spakowana musi byæ najpierw
 ## zaktualizowana
-TASKS:= ablink $(tgz)
+TASKS:= ablink $(release)
 
-.PHONY: $(TASKS) $(tgz)
+.PHONY: $(TASKS) $(release)
 
 UTILS= project tests
 
-all: libtask.a $(UTILS) $(TASKS) $(tgz)
+all: libtask.a $(UTILS) $(TASKS) $(release)
 
 clear:
 	rm -f libtask.a $(OBJS) $(UTILS) \
@@ -38,7 +38,7 @@ tests: tests.cpp libtask.a
 $(TASKS):
 	cd ../$@; make start CXXFLAGS="$(CXXFLAGS) $(SHA_FLAGS)"
 
-$(tgz):
+$(release):
 	git commit -a -v || true; \
 	cd ../$@; rm -f start start.tgz; \
 	make start CXXFLAGS="$(CXXFLAGS) -DLIB_SHA=\"$(shell cd ../tasklib; git rev-parse HEAD)\" -DPROJECT_SHA=\"$(shell cd ../$@; git rev-parse HEAD)\""
