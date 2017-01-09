@@ -96,7 +96,6 @@ protected:
 
   inline void display();
 
-  friend void get_sha_data();
   friend void set_project_name(string project);
   friend void get_user_data(string instruction);
   friend string get_random_condition(string task_name, vector<string> conditions = {});
@@ -139,7 +138,6 @@ extern string session_over_instr;
 
 vector<int> vseq(int from, int to);
 int random_int(int min, int max);
-void get_sha_data();
 void set_project_name(string project);
 void get_user_data(string fname);
 string get_random_condition(string task_name, vector<string> conditions);

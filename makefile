@@ -32,14 +32,11 @@ project: project.cpp libtask.a
 tests: tests.cpp libtask.a
 
 $(TASKS):
-	cd ../$@; git commit -a -v || true; make start CXXFLAGS="$(CXXFLAGS) -DPROJECT_SHA=\"$(shell git rev-parse HEAD)\""
+	cd ../$@; git commit -a -v || true; \
+	make start CXXFLAGS="$(CXXFLAGS) -DPROJECT_SHA=\"$(shell cd ../$@; git rev-parse HEAD)\""
 
 $(tgz):
-	git commit -a -v || true; \
-	git rev-parse HEAD > ../$@/lib_sha; \
 	cd ../$@/; \
-	git commit -a -v || true; \
-	git rev-parse HEAD > project_sha; \
 	rm -f start.tgz; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
