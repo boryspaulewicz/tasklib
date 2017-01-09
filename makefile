@@ -43,6 +43,6 @@ $(release):
 	cd ../$@; rm -f start start.tgz; \
 	make start CXXFLAGS="$(CXXFLAGS) -DLIB_SHA=\"$(shell cd ../tasklib; git rev-parse HEAD)\" -DPROJECT_SHA=\"$(shell cd ../$@; git rev-parse HEAD)\""
 	git commit -a -v || true; \
-	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
+	cd ../$@; tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
 	../tasklib/project register $@
