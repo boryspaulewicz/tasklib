@@ -67,15 +67,20 @@ void get_user_data(string instr){
   }
 }
 
-string get_random_condition(string project, vector<string> conditions){
+string get_random_condition(vector<string> conditions){
+  if(Task::session_data.count("project") != 1)
+    throw(runtime_error("Próba ustalenia warunku losowego bez ustalonej nazwy projektu"));
+  auto project = (string)Task::session_data["project"];
   log("Ustalam losowy warunek");
   // liczebności również warunków, które jeszcze nie wystąpiły w bazie
   // (wtedy = 0)
   map<string, int> counts;
   for(auto c : conditions)
     counts[c] = 0;
-  auto res = Task::db.query("SELECT cnd, COUNT(*) FROM session WHERE project = '" + project +
-                            "' AND stage = 'finished' AND subject != 'admin' GROUP BY cnd;");
+  auto res = Task::db.query("SELECT cnd, COUNT(*), FROM session WHERE project = '" + project + "' "
+                            "AND stage = 'finished' "
+                            // "AND tag = '" + (session_data.count("tag") == 1 ? session_data["tag"] : "") + "' "
+                            "AND subject != 'admin' GROUP BY cnd;");
   while(res->next()){
     counts[res->getString(1)] = res->getInt(2);
     conditions.push_back(res->getString(1));
@@ -111,18 +116,35 @@ Ptype Task::get_session_data(string name){
   return session_data[name];
 }
 
-// map<string, vector<string> > Task::get_unfinished_sessions(string taskname, map<string, Ptype>& session_data){
-//     map<string, Ptype> data;
-//     for(auto& v : {"subject", "age", "gender"})
-//       data[v] = session_data[v];
-//     auto res = Task::db.query("SELECT session_id, cnd, timestamp FROM session WHERE stage = 'started' AND project = '" + taskname +
-//                               "' AND " + Task::db.match_statement(data) + ";");
-//     map<string, vector<string> > tbl;
-//     while(res->next())
-//       for(auto& v : {"session_id", "cnd", "time"})
-//         tbl[v].push_back(res->getString(v));
-//     return tbl;
-// }
+
+// Najpierw musimy ustalić, czy taka sama osoba wykonywała 1+ razy to
+// samo zadanie w tym samym projekcie, sprawdzamy, też, ile prób
+// aktualnego zadania wykonała w każdej z tych sesji.
+void Task::get_unfinished_sessions(){
+    map<string, Ptype> match_data;
+    for(auto& v : {"subject", "age", "gender", "project"})
+      match_data[v] = Task::session_data[v];
+    // Zbieramy dane o wszystkich nieskończonych sesjach tej osoby w tym projekcie
+    auto res = Task::db.query("SELECT session_id, cnd, timestamp FROM session WHERE " + Task::db.match_statement(match_data) + " "
+                              " AND stage = 'started';");
+    vector<int> session_ids;
+    map<int, map<string, string> > sessions;
+    while(res->next())
+      for(auto& v : {"cnd"}){
+        session_ids.push_back(res->getInt("session_id"));
+        sessions[res->getInt("session_id")][v] = res->getString(v);
+      }
+    // Dla każdej niezakończonej sesji zbieramy dane o liczbie prób
+    // niezakończonego zadania
+    for(auto& sid : session_ids){
+      res = Task::db.query("SELECT session_tables.timestamp, count(*) as count FROM "
+                           "session_tables JOIN " + table_name + " USING session_id "
+                           " WHERE session_id = " + to_string(sid) + " "
+                           "AND session_tables.stage = 'started' GROUP BY session_id;");
+      // while(res->next())
+      //   sessions[sid][]
+    }
+}
 
 void Task::register_session(){
   if(user_data_initialized){

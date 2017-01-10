@@ -71,7 +71,6 @@ protected:
   static int session_id;
   static map<string, Ptype> session_data;
   static bool user_data_initialized;
-  // static bool sha_data_initialized;
   map<string, Ptype> trial_data;
 
   void register_session();
@@ -90,7 +89,7 @@ protected:
 
  public:
 
-  static map<string, vector<string> > get_unfinished_sessions(string taskname, map<string, Ptype>& session_data);
+  void get_unfinished_sessions(void);
 
   static Database db;
 
@@ -98,7 +97,7 @@ protected:
 
   friend void set_project_name(string project);
   friend void get_user_data(string instruction);
-  friend string get_random_condition(string task_name, vector<string> conditions = {});
+  friend string get_random_condition(vector<string> conditions = {});
 
   Ptype get_session_data(string name);
   
@@ -126,7 +125,7 @@ void Task::display(){
     Text text;
     text.setFont(font); text.setCharacterSize((float)height * 0.02);
     text.setString("state: " + to_string(state()) + " condition: " + condition);
-    text.setColor(Color::Green);
+    text.setFillColor(Color::Green);
     text.setPosition(Vector2f(0, 0));
     draw(text);
   }

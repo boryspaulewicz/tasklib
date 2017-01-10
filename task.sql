@@ -27,21 +27,23 @@ FLUSH PRIVILEGES;
 CREATE TABLE IF NOT EXISTS session (
 session_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,     
 project VARCHAR(100) COLLATE utf8_polish_ci NOT NULL,
-cnd VARCHAR(50) COLLATE utf8_polish_ci, -- condition zarezerwowane
+-- condition zarezerwowane, w cnd dopuszczamy NULL, bo wtedy puste
+-- nieliczone w count(*)
+cnd VARCHAR(50) COLLATE utf8_polish_ci,
 subject VARCHAR(100) COLLATE utf8_polish_ci NOT NULL,
 age INT NOT NULL,
 gender ENUM('M','K') COLLATE utf8_polish_ci NOT NULL,
-stage ENUM('started','finished') COLLATE utf8_polish_ci NOT NULL,
+stage ENUM('started','finished') COLLATE utf8_polish_ci NOT NULL DEFAULT 'started',
 timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-project_sha VARCHAR(60) COLLATE utf8_polish_ci,
-lib_sha VARCHAR(60) COLLATE utf8_polish_ci,
-tag VARCHAR(50)
+project_sha VARCHAR(60) COLLATE utf8_polish_ci NOT NULL,
+lib_sha VARCHAR(60) COLLATE utf8_polish_ci NOT NULL,
+tag VARCHAR(50) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 CREATE TABLE IF NOT EXISTS session_tables (
 session_id INT(11) NOT NULL,
 table_name VARCHAR(50) COLLATE utf8_polish_ci NOT NULL,
-stage ENUM('started','finished') COLLATE utf8_polish_ci NOT NULL,
+stage ENUM('started','finished') COLLATE utf8_polish_ci DEFAULT 'started',
 timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 KEY (session_id), -- pomijamy nazwę, automatycznie przydzieli session_id
 FOREIGN KEY (session_id) REFERENCES session (session_id) ON DELETE CASCADE

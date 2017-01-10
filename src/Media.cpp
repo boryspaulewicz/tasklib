@@ -40,7 +40,7 @@ void Media::init(){
 }
 
 void Media::close(){
-  win->close();
+  // win->close(); // razem z = nullptr powoduje naruszenie ochrony pamiêci w nowej SFML
   win = nullptr;
 }
 
