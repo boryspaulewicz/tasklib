@@ -13,7 +13,7 @@ class Datasaver{
 
 private:
 
-  thread* send_data_thread;
+  unique_ptr<thread> send_data_thread;
 
 public:
 
@@ -22,5 +22,8 @@ public:
   ~Datasaver();
   
 };
+
+// void set_settings(string name, string value);
+// void update_settings();
 
 #endif

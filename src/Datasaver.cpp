@@ -1,5 +1,17 @@
 #include "Datasaver.hpp"
 
+// void set_settings(string name, string value){
+//   db.execute("UPDATE TABLE SET value = '" + value + "' WHERE name = '" + name + "';");
+// }
+
+// void update_settings(){
+//   lock_guard<mutex> lock(Task::settings_mutex);
+//   Task::settings.clear();
+//   auto res = db.query("select name, value from settings;");
+//   while(res->next())
+//     Task::settings[res->getString(1)] = res->getString(2);
+// }
+
 void send_data(Database* db, string table_name, int session_id, map<string, Ptype> session_data, map<string, Ptype> trial_data){
   if(trial_data["trial"] == 0){
     if(db->table_exists(table_name)){
@@ -24,7 +36,7 @@ void send_data(Database* db, string table_name, int session_id, map<string, Ptyp
 
 Datasaver::Datasaver(Database* db, string& table_name, int& session_id, map<string, Ptype>& session_data,
                      map<string, Ptype>& trial_data){
-  send_data_thread = new thread(send_data, db, table_name, session_id, session_data, trial_data);
+  send_data_thread = unique_ptr<thread>(new thread(send_data, db, table_name, session_id, session_data, trial_data));
 }
 
 Datasaver::~Datasaver(){

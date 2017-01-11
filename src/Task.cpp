@@ -4,6 +4,8 @@
 
 // Elementy wspólne dla wszystkich zadań
 Database Task::db;
+mutex Task::settings_mutex;
+map<string, string> Task::settings;
 map<string, Ptype> Task::session_data;
 #define SESSION_ID_UNINITIALIZED -1
 int Task::session_id = SESSION_ID_UNINITIALIZED;

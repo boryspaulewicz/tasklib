@@ -53,3 +53,8 @@ CREATE TABLE IF NOT EXISTS projects (
 name VARCHAR(100) COLLATE utf8_polish_ci NOT NULL,
 description VARCHAR(1000) COLLATE utf8_polish_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+
+CREATE TABLE IF NOT EXISTS settings (
+name VARCHAR(100) COLLATE utf8_polish_ci UNIQUE NOT NULL,
+value VARCHAR(100) COLLATE utf8_polish_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;

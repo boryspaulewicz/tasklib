@@ -28,6 +28,7 @@ using namespace sf;
 #include "Scenario.hpp"
 #include "Database.hpp"
 #include "Datasaver.hpp"
+#include "SettingsUpdater.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
 #include "Timer.hpp"
@@ -48,7 +49,8 @@ extern string project_sha;
 #endif
 
 class Task : public Media{
-
+  friend class SettingsUpdater;
+  
 private:
 
   time_type task_start;
@@ -63,6 +65,8 @@ protected:
   unsigned int max_task_time;
   string table_name;
   bool initialized = false, finished = false;
+  static mutex settings_mutex;
+  static map<string, string> settings;
   
   unique_ptr<Conditions> cs;
   unique_ptr<Scenario> scen;
@@ -98,7 +102,8 @@ protected:
   friend void set_project_name(string project);
   friend void get_user_data(string instruction);
   friend string get_random_condition(vector<string> conditions = {});
-
+  friend void update_settings(Database* db);
+  
   Ptype get_session_data(string name);
   
   void init(string task_name, vector<pair<string, vector<Ptype> > > design, unsigned int b = 1, unsigned int n = 1,
@@ -134,6 +139,7 @@ void Task::display(){
 
 extern string user_data_instr;
 extern string session_over_instr;
+extern void update_settings(Database* db);
 
 vector<int> vseq(int from, int to);
 int random_int(int min, int max);

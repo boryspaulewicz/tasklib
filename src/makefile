@@ -14,6 +14,8 @@ Datasaver.o: Database.hpp
 
 Database.o: Ptype.hpp
 
+Settings.o: Task.o
+
 %.o: %.cpp %.hpp Utils.hpp
 	g++ -o $@ -c $< $(CXXFLAGS)
 
