@@ -15,7 +15,7 @@
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
-#include "Ptype.hpp"
+#include "PType.hpp"
 
 using namespace std;
 using namespace sql;
@@ -42,8 +42,8 @@ public:
   unique_ptr<ResultSet> query(string q);
   void execute(string q);
   void register_session();
-  string match_statement(map<string, Ptype>& d);
-  string insert_statement(string table, map<string, Ptype> d);
+  string match_statement(map<string, PType>& d);
+  string insert_statement(string table, map<string, PType> d);
   bool table_exists(string table);
   
   ~Database();

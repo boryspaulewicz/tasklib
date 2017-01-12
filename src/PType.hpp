@@ -8,7 +8,7 @@
 #include <vector>
 using namespace std;
 
-class Ptype{
+class PType{
 
 public:
 
@@ -21,7 +21,7 @@ public:
   val_type type;
   int varchar_size = 50;
 
-  Ptype() : type(INT), ival{0}{}
+  PType() : type(INT), ival{0}{}
   
   string sql_type(){
     switch(type){
@@ -44,10 +44,10 @@ public:
   }
   
   template<size_t N>
-  Ptype(const char (&v)[N]){ type = STRING; sval = (const char*)v; }
-  Ptype(const string& v){ type = STRING; sval = v; }
-  Ptype(const double& v){ type = DOUBLE; dval = v; }
-  Ptype(const int& v){ type = INT; ival = v; }
+  PType(const char (&v)[N]){ type = STRING; sval = (const char*)v; }
+  PType(const string& v){ type = STRING; sval = v; }
+  PType(const double& v){ type = DOUBLE; dval = v; }
+  PType(const int& v){ type = INT; ival = v; }
 
   template<size_t N>
   void operator=(const char (&v)[N]){ type = STRING; sval = string((const char*)v); }
@@ -88,26 +88,26 @@ public:
 
   operator string(){
     switch(type){
-    case Ptype::STRING:
+    case PType::STRING:
       return sval;
-    case Ptype::DOUBLE:
+    case PType::DOUBLE:
       return to_string(dval);
-    case Ptype::INT:
+    case PType::INT:
       return to_string(ival);
     }
   }
 
 };
 
-string to_string(const Ptype& v);
+string to_string(const PType& v);
 
-ostream& operator<<(ostream& os, const Ptype& v);
-istream& operator>>(istream& os, Ptype& v);
+ostream& operator<<(ostream& os, const PType& v);
+istream& operator>>(istream& os, PType& v);
 
-string operator+(string lhs, Ptype& rhs);
-string operator+(const char* lhs, Ptype& rhs);
-string operator+(Ptype& lhs, const char* rhs);
+string operator+(string lhs, PType& rhs);
+string operator+(const char* lhs, PType& rhs);
+string operator+(PType& lhs, const char* rhs);
 
-map<string, Ptype> read_cfg(string fname, bool must_exist = true);
+map<string, PType> read_cfg(string fname, bool must_exist = true);
 
 #endif

@@ -17,7 +17,7 @@ void Conditions::fill_conditions(){
   }
 }
 
-Conditions::Conditions(vector<pair<string, vector<Ptype> > > design){
+Conditions::Conditions(vector<pair<string, vector<PType> > > design){
   nof_cnds = 1;
   for(auto& d : design){
     nof_cnds *= d.second.size();

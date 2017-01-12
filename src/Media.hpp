@@ -7,7 +7,7 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include "States.hpp"
-#include "Ptype.hpp"
+#include "PType.hpp"
 using namespace std;
 using namespace sf;
 
@@ -44,7 +44,7 @@ public:
   void init();
   void close();
   
-  void process_events(Event &event);
+  void process_events();
 
   time_type some_keyp(){ return some_key_pressed; }
   time_type keyp(int key){ return key_pressed[key]; }

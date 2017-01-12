@@ -4,9 +4,7 @@
 
 // Elementy wspólne dla wszystkich zadań
 Database Task::db;
-mutex Task::settings_mutex;
-map<string, string> Task::settings;
-map<string, Ptype> Task::session_data;
+map<string, PType> Task::session_data;
 #define SESSION_ID_UNINITIALIZED -1
 int Task::session_id = SESSION_ID_UNINITIALIZED;
 bool Task::user_data_initialized = false;
@@ -22,33 +20,6 @@ string user_data_instr = "W czasie eksperymentu obowiązuje cisza. Wyłącz tele
 string session_over_instr = "To już koniec eksperymentu. Dziękujemy za udział.\n\n"
   "Poczekaj na swoim miejscu i zachowaj ciszę, osoba prowadząca badanie podejdzie do Ciebie"
   " w dogodnym momencie i poinformuje Cię o dalszym postępowaniu.";
-
-// void get_sha_data(){
-//   if(Task::sha_data_initialized)
-//     return;
-//   ifstream f;
-//   f.open(LIB_SHA);
-//   string value;
-//   if(f.good()){
-//     getline(f, value);
-//     if(value.size() != 40)
-//       throw(runtime_error("Plik " LIB_SHA " ma niewłaściwą długość"));
-//     Task::session_data["lib_sha"] = value;
-//   }else{
-//     log("Nie znalazłem pliku " LIB_SHA ".");
-//   }
-//   f.close();
-//   f.open(PROJECT_SHA);
-//   if(f.good()){
-//     getline(f, value);
-//     if(value.size() != 40)
-//       throw(runtime_error("Plik " PROJECT_SHA " ma niewłaściwą długość"));
-//     Task::session_data["project_sha"] = value;
-//   }else{
-//     log("Nie znalazłem pliku" PROJECT_SHA);
-//   }
-//   Task::sha_data_initialized = true;
-// }
 
 void set_project_name(string project){
   log("Nazwa projektu: " + project);
@@ -114,7 +85,7 @@ string get_random_condition(vector<string> conditions){
   return chosen;
 }
 
-Ptype Task::get_session_data(string name){
+PType Task::get_session_data(string name){
   return session_data[name];
 }
 
@@ -123,7 +94,7 @@ Ptype Task::get_session_data(string name){
 // samo zadanie w tym samym projekcie, sprawdzamy, też, ile prób
 // aktualnego zadania wykonała w każdej z tych sesji.
 void Task::get_unfinished_sessions(){
-    map<string, Ptype> match_data;
+    map<string, PType> match_data;
     for(auto& v : {"subject", "age", "gender", "project"})
       match_data[v] = Task::session_data[v];
     // Zbieramy dane o wszystkich nieskończonych sesjach tej osoby w tym projekcie
@@ -215,14 +186,14 @@ void update_session_status(vector<string> table_names){
   }
 }
 
-void Task::run(string table_name, vector<pair<string, vector<Ptype> > > design,
+void Task::run(string table_name, vector<pair<string, vector<PType> > > design,
                unsigned int b, unsigned int n, unsigned int nof_trials,
                unsigned int max_task_time){
   init(table_name, design, b, n, nof_trials, max_task_time);
   run();
 }
 
-void Task::init(string table_name_, vector<pair<string, vector<Ptype> > > design_,
+void Task::init(string table_name_, vector<pair<string, vector<PType> > > design_,
                 unsigned int b_, unsigned int n_, unsigned int nof_trials_,
                 unsigned int max_task_time_){
   table_name = table_name_; design = design_;
@@ -271,30 +242,35 @@ void Task::run(){
   }
 
   Media::init();
-
+  if(use_db)
+    update_settings(&db);
+  // Chcemy usuwać obiekt data_saver dopiero, gdy damy mu czas na
+  // wymianę danych
+  unique_ptr<Datasaver> data_saver;
+  
   log("Rozpoczynam pętlę prób zadania");
   task_start = time_ms();
   for(current_trial = 0; !task_is_finished(); current_trial++){
 
+    if(break_is_forced())
+      forced_break();
+    
     trial_data.clear();
     trial_data["trial"] = current_trial;
     trial_data["cnd_num"] = (int)scen->get(current_trial);
     for(auto& f : cs->names)
       trial_data[f] = cnd(f);
-    unique_ptr<Datasaver> data_saver;
     
     TRIAL_IS_OVER = false;
     set_state(0);
     while(!TRIAL_IS_OVER && (keyp(KEYESCAPE) <= task_start)){
-      // set_active();
       trial_code(state());
-      process_events(event);
+      process_events();
     }
     log("Próba zakończona");
 
     if(keyp(KEYESCAPE) <= task_start){
       if(use_db){
-        log("Zapisuję dane");
         data_saver = unique_ptr<Datasaver>(new Datasaver(&db, table_name, session_id, session_data, trial_data));
       }else{
         string msg = "Dane z próby:\n";
@@ -316,4 +292,29 @@ void Task::run(){
   Media::close();
   
   log("Zadanie trwało " + to_string(floor((time_ms() - task_start) / 60000)) + " minut");
+}
+
+bool Task::break_is_forced(){
+  return get_settings("forced_break") == "y";
+}
+
+void Task::forced_break(){
+  text.setString(get_settings("msg") == "" ? "Przerwa w zadaniu" : get_settings("msg"));
+  center(text);
+  while(break_is_forced()){
+    process_events();
+    clear(bg);
+    draw(text);
+    display();
+    update_settings(&db);
+  }
+  text.setString("Naciśnij dowolny klawisz, aby kontynuować");
+  center(text);
+  auto start = time_ms();
+  while(some_keyp() < start){
+    process_events();
+    clear(bg);
+    draw(text);
+    display();
+  }
 }

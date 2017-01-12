@@ -8,13 +8,13 @@ COMMON= Common.hpp Utils.hpp Log.hpp
 
 Task.o: Task.cpp *.hpp
 
-Media.o: Timer.hpp Ptype.hpp
+Media.o: Timer.hpp PType.hpp
 
 Datasaver.o: Database.hpp
 
-Database.o: Ptype.hpp
+Database.o: PType.hpp
 
-Settings.o: Task.o
+Settings.o: Task.hpp
 
 %.o: %.cpp %.hpp Utils.hpp
 	g++ -o $@ -c $< $(CXXFLAGS)

@@ -47,7 +47,7 @@ void Database::execute(string q){
   }
 }
 
-string Database::match_statement(map<string, Ptype>& d){
+string Database::match_statement(map<string, PType>& d){
   string res;
   auto it = d.begin();
   while(it != d.end()){
@@ -58,7 +58,7 @@ string Database::match_statement(map<string, Ptype>& d){
   return res;
 }
 
-string Database::insert_statement(string table, map<string, Ptype> d){
+string Database::insert_statement(string table, map<string, PType> d){
   stringstream cols, vals;
   for(auto x = d.begin(); x != d.end(); x++){
     cols << x->first;

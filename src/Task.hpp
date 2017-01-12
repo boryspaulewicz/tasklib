@@ -28,7 +28,6 @@ using namespace sf;
 #include "Scenario.hpp"
 #include "Database.hpp"
 #include "Datasaver.hpp"
-#include "SettingsUpdater.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
 #include "Timer.hpp"
@@ -49,7 +48,6 @@ extern string project_sha;
 #endif
 
 class Task : public Media{
-  friend class SettingsUpdater;
   
 private:
 
@@ -59,37 +57,35 @@ protected:
 
   bool TRIAL_IS_OVER;
   
-  vector<pair<string, vector<Ptype> > > design;
+  vector<pair<string, vector<PType> > > design;
   int b, n;
   unsigned int nof_trials;
   unsigned int max_task_time;
   string table_name;
   bool initialized = false, finished = false;
-  static mutex settings_mutex;
-  static map<string, string> settings;
   
   unique_ptr<Conditions> cs;
   unique_ptr<Scenario> scen;
   int current_trial;
 
   static int session_id;
-  static map<string, Ptype> session_data;
+  static map<string, PType> session_data;
   static bool user_data_initialized;
-  map<string, Ptype> trial_data;
+  map<string, PType> trial_data;
 
   void register_session();
   void register_task();
   void mark_task_finished();
   friend void update_session_status(vector<string> table_names);
   
-  void set_trial_data(string name, Ptype value){
+  void set_trial_data(string name, PType value){
     if(trial_data.count(name) == 1)
       throw(runtime_error("set_trial_data: niedozwolona nazwa zmiennej: " + name));
     trial_data[name] = value;
   }
-  void set_trial_data(initializer_list<pair<string, Ptype> >values){ for(auto& v : values)set_trial_data(v.first, v.second); }
+  void set_trial_data(initializer_list<pair<string, PType> >values){ for(auto& v : values)set_trial_data(v.first, v.second); }
   
-  Ptype cnd(string f){ return cs->get(f, scen->get(current_trial)); }
+  PType cnd(string f){ return cs->get(f, scen->get(current_trial)); }
 
  public:
 
@@ -102,18 +98,20 @@ protected:
   friend void set_project_name(string project);
   friend void get_user_data(string instruction);
   friend string get_random_condition(vector<string> conditions = {});
-  friend void update_settings(Database* db);
   
-  Ptype get_session_data(string name);
+  PType get_session_data(string name);
   
-  void init(string task_name, vector<pair<string, vector<Ptype> > > design, unsigned int b = 1, unsigned int n = 1,
+  void init(string task_name, vector<pair<string, vector<PType> > > design, unsigned int b = 1, unsigned int n = 1,
             unsigned int nof_trials = 0, unsigned int max_task_time = 0);
   
-  void run(string task_name, vector<pair<string, vector<Ptype> > > design, unsigned int b = 1, unsigned int n = 1,
+  void run(string task_name, vector<pair<string, vector<PType> > > design, unsigned int b = 1, unsigned int n = 1,
            unsigned int nof_trials = 0, unsigned int max_task_time = 0);
 
   void run();
 
+  bool break_is_forced();
+  void forced_break();
+  
   virtual void trial_code(int state) = 0;
 
   bool measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start);
@@ -139,7 +137,6 @@ void Task::display(){
 
 extern string user_data_instr;
 extern string session_over_instr;
-extern void update_settings(Database* db);
 
 vector<int> vseq(int from, int to);
 int random_int(int min, int max);

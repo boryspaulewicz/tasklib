@@ -8,24 +8,24 @@
 #include<map>
 #include<string>
 #include<iostream>
-#include"Ptype.hpp"
+#include"PType.hpp"
 using namespace std;
 
 class Conditions{
 
 public:
 
-  map<string,vector<Ptype> > factors;
-  map<string,vector<Ptype> > conditions;
+  map<string,vector<PType> > factors;
+  map<string,vector<PType> > conditions;
   
   int nof_cnds;
   vector<string> names;
 
   void fill_conditions();
   
-  Conditions(vector<pair<string, vector<Ptype> > > design);
+  Conditions(vector<pair<string, vector<PType> > > design);
 
-  Ptype get(string f, int c){ return conditions[f].at(c); }
+  PType get(string f, int c){ return conditions[f].at(c); }
 
   void print();
 };

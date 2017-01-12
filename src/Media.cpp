@@ -53,7 +53,7 @@ sf::String Media::utf32(string s){
   return String::fromUtf8(s.begin(), s.end());
 }
 
-void Media::process_events(Event &event){
+void Media::process_events(){
   while(win->pollEvent(event)){
     switch(event.type){
     case Event::KeyPressed :

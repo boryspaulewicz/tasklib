@@ -1,19 +1,19 @@
-#include "Ptype.hpp"
+#include "PType.hpp"
 
-string to_string(const Ptype& v){
+string to_string(const PType& v){
   switch(v.type){
-  case Ptype::STRING:
+  case PType::STRING:
     return v.sval;
-  case Ptype::DOUBLE:
+  case PType::DOUBLE:
     return to_string(v.dval);
-  case Ptype::INT:
+  case PType::INT:
     return to_string(v.ival);
   }
 }
 
-ostream& operator<<(ostream& os, const Ptype& v){ os << to_string(v); return os; }
+ostream& operator<<(ostream& os, const PType& v){ os << to_string(v); return os; }
 
-istream& operator>>(istream& is, Ptype& v){
+istream& operator>>(istream& is, PType& v){
   string s;
   is >> s;
   if(rmatch("^[0-9]+$", s)){
@@ -26,14 +26,14 @@ istream& operator>>(istream& is, Ptype& v){
   return is;
 }
 
-string operator+(string lhs, Ptype& rhs){ return lhs + (string)rhs; }
+string operator+(string lhs, PType& rhs){ return lhs + (string)rhs; }
 
-string operator+(const char* lhs, Ptype& rhs){ return string(lhs) + (string)rhs; }
+string operator+(const char* lhs, PType& rhs){ return string(lhs) + (string)rhs; }
 
-string operator+(Ptype& lhs, const char* rhs){ return (string)lhs + string(rhs); }
+string operator+(PType& lhs, const char* rhs){ return (string)lhs + string(rhs); }
 
-map<string, Ptype> read_cfg(string fname, bool must_exist){
-  map<string, Ptype> res;
+map<string, PType> read_cfg(string fname, bool must_exist){
+  map<string, PType> res;
   ifstream f;
   f.open(fname);
   string var;
