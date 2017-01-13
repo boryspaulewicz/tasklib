@@ -1,3 +1,5 @@
+// -*- coding: utf-8 -*-
+
 #include "Media.hpp"
 
 void Media::white_on_black(){
@@ -13,7 +15,7 @@ void Media::init(){
   
   white_on_black();
 
-  // Inaczej zostaj± dane z poprzedniego wykonania pêtli prób
+  // Inaczej zostajÄ… dane z poprzedniego wykonania pÄ™tli prÃ³b
   some_key_pressed = 0;
   key_pressed.clear();
   key_released.clear();
@@ -26,11 +28,11 @@ void Media::init(){
   
   string font_name = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
   if(!font.loadFromFile(font_name))
-    throw(runtime_error("Nie uda³o siê za³adowaæ domy¶lnej czcionki: " + font_name));
+    throw(runtime_error("Nie udaÅ‚o siÄ™ zaÅ‚adowaÄ‡ domyÅ›lnej czcionki: " + font_name));
   text.setFont(font);
   text.setCharacterSize((float)height * 0.05);
 
-  // To wydaje siê eliminowaæ b³±d "Failed to open BO for returned
+  // To wydaje siÄ™ eliminowaÄ‡ bÅ‚Ä…d "Failed to open BO for returned
   // DRI2 buffer"
   // while(win->pollEvent(event)){}
   // win->setActive(); // to nie wystarcza
@@ -40,7 +42,7 @@ void Media::init(){
 }
 
 void Media::close(){
-  // win->close(); // razem z = nullptr powoduje naruszenie ochrony pamiêci w nowej SFML
+  // win->close(); // razem z = nullptr powoduje naruszenie ochrony pamiÄ™ci w nowej SFML
   win = nullptr;
 }
 

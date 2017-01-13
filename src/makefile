@@ -10,7 +10,7 @@ Task.o: Task.cpp *.hpp
 
 Media.o: Timer.hpp PType.hpp
 
-Datasaver.o: Database.hpp
+DataExchange.o: Database.hpp
 
 Database.o: PType.hpp
 

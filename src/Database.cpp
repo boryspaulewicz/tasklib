@@ -84,7 +84,7 @@ void Database::connect(){
 
   if(password == ""){
     if(getenv("TASKLIB") == nullptr){
-      Uservalue uv({"Podaj hasło:"}, false);
+      UserValue uv({"Podaj hasło:"}, false);
       password = uv.value[0];
     }else{
       password = string(getenv("TASKLIB"));

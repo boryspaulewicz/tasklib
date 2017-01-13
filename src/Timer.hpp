@@ -12,7 +12,7 @@ class Timer{
 private:
 
   static tp start;
-  bool start_set = false;
+  static bool start_set;
   
 public:
 

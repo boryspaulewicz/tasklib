@@ -28,13 +28,13 @@ string trim(string str);
 
 bool rmatch(string pattern, string str);
 
-string load_from_file(string fname);
+string string_from_file(string fname);
 
 namespace Gui{
   extern Main m;
 }
 
-class Taskwindow : public Gtk::Window{
+class TaskWindow : public Gtk::Window{
 public:
   
   Frame frame;
@@ -55,7 +55,7 @@ public:
   
 };
 
-class Userdata : public Taskwindow{
+class UserData : public TaskWindow{
   
   VBox vbox;
   Label namel, agel, genderl;
@@ -69,11 +69,11 @@ public:
 
   std::map<string, string> data;
   
-  Userdata();
+  UserData();
 
 };
 
-class Uservalue : public Taskwindow{
+class UserValue : public TaskWindow{
 
   VBox vbox;
   vector<Label*> valuel;
@@ -86,7 +86,7 @@ public:
 
   vector<string> value;
 
-  Uservalue(vector<string> labels, bool visibility = true);
+  UserValue(vector<string> labels, bool visibility = true);
   
 };
 
@@ -103,7 +103,7 @@ public:
 
 };
 
-class Instruction : public Taskwindow{ // Gtk::Window{
+class Instruction : public TaskWindow{ // Gtk::Window{
   
   VBox vbox;
   HBox hbox;
@@ -120,7 +120,7 @@ public:
 
 };
 
-class Chooseitem : public Taskwindow{
+class ChooseItem : public TaskWindow{
 
   VBox vbox;
   Label label;
@@ -133,7 +133,7 @@ public:
 
   string value;
 
-  Chooseitem(vector<string> values, string text = "Wybierz wartość");
+  ChooseItem(vector<string> values, string text = "Wybierz wartość");
 
 };
 

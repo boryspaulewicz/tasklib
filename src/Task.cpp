@@ -30,7 +30,7 @@ void get_user_data(string instr){
   if(!Task::user_data_initialized){
     log("Pobieram dane osobowe");
     Instruction in(instr);
-    Userdata ud;
+    UserData ud;
     for(auto& v : {"subject", "gender"})
       Task::session_data[v] = ud.data[v];
     Task::session_data["age"] = stoi(ud.data["age"]);
@@ -65,7 +65,7 @@ string get_random_condition(vector<string> conditions){
 
   string chosen;
   if(Task::session_data["subject"] == "admin"){
-    Chooseitem ci(conditions, "Wybór administratora");
+    ChooseItem ci(conditions, "Wybór administratora");
     chosen = ci.value;
   }else{
     // Zwracamy pierwszy z najmniej reprezentowanych
@@ -246,7 +246,7 @@ void Task::run(){
     update_settings(&db);
   // Chcemy usuwać obiekt data_saver dopiero, gdy damy mu czas na
   // wymianę danych
-  unique_ptr<Datasaver> data_saver;
+  unique_ptr<DataExchange> data_saver;
   
   log("Rozpoczynam pętlę prób zadania");
   task_start = time_ms();
@@ -271,7 +271,7 @@ void Task::run(){
 
     if(keyp(KEYESCAPE) <= task_start){
       if(use_db){
-        data_saver = unique_ptr<Datasaver>(new Datasaver(&db, table_name, session_id, session_data, trial_data));
+        data_saver = unique_ptr<DataExchange>(new DataExchange(&db, table_name, session_id, session_data, trial_data));
       }else{
         string msg = "Dane z próby:\n";
         for(auto& d : trial_data)

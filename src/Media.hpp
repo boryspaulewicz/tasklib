@@ -11,14 +11,11 @@
 using namespace std;
 using namespace sf;
 
-class Media : public RenderWindow, public States{
+class Media : public States{
 
 private:
 
   unique_ptr<RenderWindow> win;
-
-protected:
-
   time_type some_key_pressed;
   vector<time_type> key_pressed, key_released, mouse_pressed, mouse_released;
   

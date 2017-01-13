@@ -9,7 +9,7 @@
 #include "Database.hpp"
 using namespace std;
 
-class Datasaver{
+class DataExchange{
 
 private:
 
@@ -20,8 +20,8 @@ private:
 
 public:
 
-  Datasaver(Database* db, string& task_name, int& session_id, map<string, PType>& session_data, map<string, PType>& trial_data);
-  ~Datasaver();
+  DataExchange(Database* db, string& task_name, int& session_id, map<string, PType>& session_data, map<string, PType>& trial_data);
+  ~DataExchange();
   
   friend string get_settings(string name);
   friend void send_data(Database* db, string table_name, int session_id, map<string, PType> session_data, map<string, PType> trial_data);

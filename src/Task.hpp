@@ -27,7 +27,7 @@ using namespace sf;
 #include "Conditions.hpp"
 #include "Scenario.hpp"
 #include "Database.hpp"
-#include "Datasaver.hpp"
+#include "DataExchange.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
 #include "Timer.hpp"
@@ -35,12 +35,14 @@ using namespace sf;
 #define STRINGIFY(s) PRE_STRINGIFY(s)
 #define PRE_STRINGIFY(s) #s
 
+// definiujemy te zmienne środowiskowe w zależności od wersji: 
+// jeżeli release, to są inicjalizowane commitami obecnych stanów
+// biblioteki i projektu, jeżeli nie release, to ="dev".
 #ifdef LIB_SHA
 string lib_sha = STRINGIFY(LIB_SHA);
 #else
 extern string lib_sha;
 #endif
-
 #ifdef PROJECT_SHA
 string project_sha = STRINGIFY(PROJECT_SHA);
 #else
@@ -103,21 +105,16 @@ protected:
   
   void init(string task_name, vector<pair<string, vector<PType> > > design, unsigned int b = 1, unsigned int n = 1,
             unsigned int nof_trials = 0, unsigned int max_task_time = 0);
-  
   void run(string task_name, vector<pair<string, vector<PType> > > design, unsigned int b = 1, unsigned int n = 1,
            unsigned int nof_trials = 0, unsigned int max_task_time = 0);
-
   void run();
+  virtual void trial_code(int state) = 0;
+  inline bool task_is_finished();
+
+  bool measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start);
 
   bool break_is_forced();
   void forced_break();
-  
-  virtual void trial_code(int state) = 0;
-
-  bool measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start);
-  
-  inline bool task_is_finished();
-
 };
 
 void Task::display(){

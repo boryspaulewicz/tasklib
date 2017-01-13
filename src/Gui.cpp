@@ -8,14 +8,14 @@ namespace Gui{
   Main m;
 }
 
-void Taskwindow::init(){
+void TaskWindow::init(){
   property_decorated() = false;
   set_position(Gtk::WIN_POS_CENTER_ALWAYS);
   set_border_width(10);
   add(frame);
 }
 
-void Taskwindow::run(){
+void TaskWindow::run(){
   show_all_children();
   Gui::m.run(*this);
 }
@@ -35,7 +35,7 @@ void Textview::set_text(string text){
   get_buffer()->set_text(text);
 }
 
-string load_from_file(string fname){
+string string_from_file(string fname){
   ifstream f;
   f.open(fname);
   if(!f.good()){
@@ -47,7 +47,7 @@ string load_from_file(string fname){
   return contents.str();
 }
 
-void Userdata::button_pressed(){
+void UserData::button_pressed(){
   if(trim(name.get_text()) == string("")){
     MessageDialog msg(*this, "Brak danych w polu Identyfikator");
     msg.run();
@@ -92,7 +92,7 @@ void Userdata::button_pressed(){
   close();
 }
 
-Userdata::Userdata() : button("Dalej"), namel("Identyfikator"), agel("Wiek"), genderl("Płeć"){
+UserData::UserData() : button("Dalej"), namel("Identyfikator"), agel("Wiek"), genderl("Płeć"){
   init();
 
   frame.add(vbox);
@@ -108,12 +108,12 @@ Userdata::Userdata() : button("Dalej"), namel("Identyfikator"), agel("Wiek"), ge
   vbox.pack_start(gender);
   vbox.pack_start(button);
 
-  button.signal_clicked().connect(sigc::mem_fun(*this, &Userdata::button_pressed));
+  button.signal_clicked().connect(sigc::mem_fun(*this, &UserData::button_pressed));
 
   run();
 }
 
-void Uservalue::button_pressed(){
+void UserValue::button_pressed(){
   for(auto e : valuee){
     value.push_back(trim(e->get_text()));
   }
@@ -121,7 +121,7 @@ void Uservalue::button_pressed(){
   return;
 }
 
-Uservalue::Uservalue(vector<string> labels, bool visibility) : button("Ok"){
+UserValue::UserValue(vector<string> labels, bool visibility) : button("Ok"){
   init();
   
   frame.add(vbox);
@@ -136,7 +136,7 @@ Uservalue::Uservalue(vector<string> labels, bool visibility) : button("Ok"){
   }
   vbox.pack_start(button);
 
-  button.signal_clicked().connect(sigc::mem_fun(*this, &Uservalue::button_pressed));
+  button.signal_clicked().connect(sigc::mem_fun(*this, &UserValue::button_pressed));
 
   run();
   for(auto l : valuel)
@@ -178,7 +178,7 @@ Instruction::Instruction(string contents, vector<string> labels, float width, fl
   run();
 }
 
-void Chooseitem::button_pressed(){
+void ChooseItem::button_pressed(){
   if(cbox.get_active_text() != string("")){
     value = cbox.get_active_text();
     close();
@@ -189,7 +189,7 @@ void Chooseitem::button_pressed(){
   }
 }
 
-Chooseitem::Chooseitem(vector<string> values, string text) : label(text), button("Ok"){
+ChooseItem::ChooseItem(vector<string> values, string text) : label(text), button("Ok"){
   init();
 
   frame.add(vbox);
@@ -201,7 +201,7 @@ Chooseitem::Chooseitem(vector<string> values, string text) : label(text), button
   vbox.pack_start(cbox);
   vbox.pack_start(button);
 
-  button.signal_clicked().connect(sigc::mem_fun(*this, &Chooseitem::button_pressed));
+  button.signal_clicked().connect(sigc::mem_fun(*this, &ChooseItem::button_pressed));
 
   run();
 }

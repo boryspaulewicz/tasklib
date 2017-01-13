@@ -1,25 +1,25 @@
-#include "Datasaver.hpp"
+#include "DataExchange.hpp"
 
-mutex Datasaver::settings_mutex;
-map<string, string> Datasaver::settings;
+mutex DataExchange::settings_mutex;
+map<string, string> DataExchange::settings;
 
 string get_settings(string name){
-  lock_guard<mutex> lock(Datasaver::settings_mutex);
-  return Datasaver::settings.count(name) == 1 ? Datasaver::settings[name] : "";
+  lock_guard<mutex> lock(DataExchange::settings_mutex);
+  return DataExchange::settings.count(name) == 1 ? DataExchange::settings[name] : "";
 }
 
 void update_settings(Database* db){
   log("Uaktualniam ustawienia z bazy");
-  lock_guard<mutex> lock(Datasaver::settings_mutex);
-  Datasaver::settings.clear();
+  lock_guard<mutex> lock(DataExchange::settings_mutex);
+  DataExchange::settings.clear();
   auto res = db->query("select name, value from settings;");
   while(res->next())
-    Datasaver::settings[res->getString(1)] = res->getString(2);
+    DataExchange::settings[res->getString(1)] = res->getString(2);
 }
 
 void send_data(Database* db, string table_name, int session_id, map<string, PType> session_data, map<string, PType> trial_data){
   if(trial_data["trial"] == 0){
-    log("Zapisujê dane do bazy");
+    log("Zapisujï¿½ dane do bazy");
     if(db->table_exists(table_name)){
       auto desc = db->query("DESCRIBE " + table_name + ";");
       set<string> cols;
@@ -41,12 +41,12 @@ void send_data(Database* db, string table_name, int session_id, map<string, PTyp
   update_settings(db);
 }
 
-Datasaver::Datasaver(Database* db, string& table_name, int& session_id, map<string, PType>& session_data,
+DataExchange::DataExchange(Database* db, string& table_name, int& session_id, map<string, PType>& session_data,
                      map<string, PType>& trial_data){
   send_data_thread = unique_ptr<thread>(new thread(send_data, db, table_name, session_id, session_data, trial_data));
 }
 
-Datasaver::~Datasaver(){
+DataExchange::~DataExchange(){
   send_data_thread->join();
 }
 
