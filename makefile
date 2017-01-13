@@ -42,12 +42,12 @@ $(TASKS):
 	cd ../$@; make start
 
 $(tgz):
-	git commit -a -v || true; \
-	git rev-parse HEAD > ../$@/lib_sha; \
-	cd ../$@/; \
-	git commit -a -v || true; \
-	git rev-parse HEAD > project_sha; \
-	rm -f start.tgz; \
+	rm -f ../$@/start ../$@/start.tgz
+	git commit -a -v || true
+	$(eval LIB_SHA:=`git rev-parse HEAD`)
+	cd ../$@/; git commit -a -v || true
+	$(eval PROJECT_SHA:=`cd ../$@; git rev-parse HEAD`)
+	cd ../$@; make; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
 	../tasklib/project register $@
