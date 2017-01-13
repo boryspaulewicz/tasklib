@@ -18,19 +18,18 @@
 #include<thread>
 #include<chrono>
 #include<functional>
-using namespace std;
-
-#include <SFML/Graphics.hpp>
-using namespace sf;
-
 #include "Common.hpp"
+#include "Timer.hpp"
 #include "Conditions.hpp"
 #include "Scenario.hpp"
 #include "Database.hpp"
 #include "DataExchange.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
-#include "Timer.hpp"
+using namespace std;
+// Musi być uwzględnione po .hpp z Task'a, inaczej problem z ms(dur d)
+#include <SFML/Graphics.hpp>
+using namespace sf;
 
 #define STRINGIFY(s) PRE_STRINGIFY(s)
 #define PRE_STRINGIFY(s) #s

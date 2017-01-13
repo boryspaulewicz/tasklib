@@ -114,6 +114,7 @@ class SRT : public Task{
                     clear(bg);
                     display();
                     TRIAL_IS_OVER = true;
+                    return;
             }
         }
 };

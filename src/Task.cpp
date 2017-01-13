@@ -156,7 +156,7 @@ bool Task::measure_key_reaction(const vector<int>& response_keys, int& response,
 
 bool Task::task_is_finished(){
   if(!finished)
-    finished = (current_trial == nof_trials) || ((max_task_time > 0) && ((time_ms() - task_start) >= max_task_time));
+    finished = (current_trial == nof_trials) || ((max_task_time > 0) && ((now_ms() - task_start) >= max_task_time));
   return finished;
 }
 
@@ -249,7 +249,7 @@ void Task::run(){
   unique_ptr<DataExchange> data_saver;
   
   log("Rozpoczynam pętlę prób zadania");
-  task_start = time_ms();
+  task_start = now_ms();
   for(current_trial = 0; !task_is_finished(); current_trial++){
 
     if(break_is_forced())
@@ -291,7 +291,7 @@ void Task::run(){
 
   Media::close();
   
-  log("Zadanie trwało " + to_string(floor((time_ms() - task_start) / 60000)) + " minut");
+  log("Zadanie trwało " + to_string(floor((now_ms() - task_start) / 60000)) + " minut");
 }
 
 bool Task::break_is_forced(){
@@ -310,7 +310,7 @@ void Task::forced_break(){
   }
   text.setString("Naciśnij dowolny klawisz, aby kontynuować");
   center(text);
-  auto start = time_ms();
+  time_type start = now_ms();
   while(some_keyp() < start){
     process_events();
     clear(bg);

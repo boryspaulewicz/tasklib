@@ -36,9 +36,9 @@ void Media::init(){
   // DRI2 buffer"
   // while(win->pollEvent(event)){}
   // win->setActive(); // to nie wystarcza
-  auto small_break = time_ms();
+  time_type small_break = now_ms();
   auto cfg = read_cfg("cfg.txt", false);
-  while((time_ms() - small_break) < (cfg.count("media_delay_ms") == 1 ? (int)cfg["media_delay_ms"] : 200)){}
+  while((now_ms() - small_break) < (cfg.count("media_delay_ms") == 1 ? (int)cfg["media_delay_ms"] : 200)){}
 }
 
 void Media::close(){
@@ -59,17 +59,17 @@ void Media::process_events(){
   while(win->pollEvent(event)){
     switch(event.type){
     case Event::KeyPressed :
-      some_key_pressed = time_ms();
+      some_key_pressed = now_ms();
       key_pressed[event.key.code] = some_key_pressed;
       break;
     case Event::KeyReleased :
-      key_released[event.key.code] = time_ms();
+      key_released[event.key.code] = now_ms();
       break;
     case Event::MouseButtonPressed :
-      mouse_pressed[event.mouseButton.button] = time_ms();
+      mouse_pressed[event.mouseButton.button] = now_ms();
       break;
     case Event::MouseButtonReleased :
-      mouse_released[event.mouseButton.button] = time_ms();
+      mouse_released[event.mouseButton.button] = now_ms();
       break;
     default:
       break;
