@@ -47,7 +47,7 @@ $(tgz):
 	$(eval LIB_SHA:=`git rev-parse HEAD`)
 	cd ../$@/; git commit -a -v || true
 	$(eval PROJECT_SHA:=`cd ../$@; git rev-parse HEAD`)
-	cd ../$@; make; \
+	cd ../$@; make CXXFLAGS=$(CXXFLAGS) $(SHA_FLAGS); \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
 	../tasklib/project register $@
