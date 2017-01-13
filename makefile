@@ -14,13 +14,13 @@ export CXXFLAGS LDFLAGS SHA_FLAGS
 
 ## $(tgz) na koñcu, bo wersja spakowana musi byæ najpierw
 ## zaktualizowana
-TASKS:=$(tgz)
+tasks:=$(tgz)
 
-.PHONY: $(TASKS) $(tgz) test
+.PHONY: $(tasks) $(tgz) test
 
 UTILS= project tests
 
-all: libtask.a $(UTILS) test $(TASKS) $(tgz)
+all: libtask.a $(UTILS) test $(tasks) $(tgz)
 
 clear:
 	rm -f libtask.a $(OBJS) $(UTILS) \
@@ -38,8 +38,8 @@ tests: tests.cpp libtask.a
 test:
 	cd test; make
 
-$(TASKS):
-	cd ../$@; make start
+$(tasks):
+	cd ../$@; make start CXXFLAGS="$(CXXFLAGS) -DLIB_SHA=\"dev\" -DPROJECT_SHA=\"dev\""
 
 $(tgz):
 	rm -f ../$@/start ../$@/start.tgz
