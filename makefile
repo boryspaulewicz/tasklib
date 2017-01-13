@@ -44,10 +44,8 @@ $(TASKS):
 $(tgz):
 	rm -f ../$@/start ../$@/start.tgz
 	git commit -a -v || true
-	$(eval LIB_SHA:=$(shell git rev-parse HEAD))
 	cd ../$@/; git commit -a -v || true
-	$(eval PROJECT_SHA:=$(shell cd ../$@; git rev-parse HEAD))
-	cd ../$@; make CXXFLAGS="$(CXXFLAGS) $(SHA_FLAGS)"; \
+	cd ../$@; make CXXFLAGS="$(CXXFLAGS) -DPROJECT_SHA=$(shell cd ../$@; git rev-parse HEAD) -DLIB_SHA=$(shell git rev-parse HEAD)"; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \
 	export TASKLIB=task; \
 	../tasklib/project register $@
