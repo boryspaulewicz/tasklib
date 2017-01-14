@@ -1,3 +1,5 @@
+// -*- coding: utf-8 -*-
+
 #include "DataExchange.hpp"
 
 mutex DataExchange::settings_mutex;
@@ -19,7 +21,7 @@ void update_settings(Database* db){
 
 void send_data(Database* db, string table_name, int session_id, map<string, PType> session_data, map<string, PType> trial_data){
   if(trial_data["trial"] == 0){
-    log("Zapisuj� dane do bazy");
+    log("Zapisuję dane do bazy");
     if(db->table_exists(table_name)){
       auto desc = db->query("DESCRIBE " + table_name + ";");
       set<string> cols;
@@ -38,7 +40,7 @@ void send_data(Database* db, string table_name, int session_id, map<string, PTyp
   }
   trial_data["session_id"] = session_id;
   db->execute(db->insert_statement(table_name, trial_data));
-  update_settings(db);
+  update_settings(db); // może powodować czasem segmentation fault?
 }
 
 DataExchange::DataExchange(Database* db, string& table_name, int& session_id, map<string, PType>& session_data,
