@@ -10,6 +10,8 @@ namespace Gui{
 
 void TaskWindow::init(){
   property_decorated() = false;
+  // set_modal(true);
+  set_keep_above(true);
   set_position(Gtk::WIN_POS_CENTER_ALWAYS);
   set_border_width(10);
   add(frame);
@@ -20,7 +22,7 @@ void TaskWindow::run(){
   Gui::m.run(*this);
 }
 
-Textview::Textview(){
+TextView2::TextView2(){
     Pango::FontDescription fd;
     fd.set_size(15 * Pango::SCALE);
     override_font(fd);
@@ -31,7 +33,7 @@ Textview::Textview(){
     set_justification(JUSTIFY_FILL);
 }
 
-void Textview::set_text(string text){
+void TextView2::set_text(string text){
   get_buffer()->set_text(text);
 }
 
@@ -114,14 +116,27 @@ UserData::UserData() : button("Dalej"), namel("Identyfikator"), agel("Wiek"), ge
 }
 
 void UserValue::button_pressed(){
+  bool all_fine = true;
+  value.clear();
   for(auto e : valuee){
+    if(reg != ""){
+      if(!rmatch(reg, e->get_text())){
+        MessageDialog msg(*this, ("Błędne dane:\n" + message).c_str());
+        msg.run();
+        all_fine = false;
+        break;
+      }
+    }
     value.push_back(trim(e->get_text()));
   }
-  close();
+  if(all_fine)
+    close();
   return;
 }
 
-UserValue::UserValue(vector<string> labels, bool visibility) : button("Ok"){
+UserValue::UserValue(vector<string> labels, bool visibility, string reg, string msg) : button("Ok"),
+                                                                                       message{msg},
+                                                                                       reg{reg}{
   init();
   
   frame.add(vbox);

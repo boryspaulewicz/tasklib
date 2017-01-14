@@ -1,6 +1,8 @@
 ## make tgz=test utworzy archiwum projektu test z plikami sha.
 tgz=
 
+EDITOR=emacs
+
 CXXFLAGS= -O3 -finline-functions -std=c++11 -g -O3 -I../tasklib/src `pkg-config gtkmm-3.0 --cflags`
 
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
@@ -10,7 +12,7 @@ OBJS:= $(addprefix ./src/,$(OBJS))
 
 SHA_FLAGS=-DLIB_SHA="dev" -DPROJECT_SHA="dev"
 
-export CXXFLAGS LDFLAGS SHA_FLAGS
+export CXXFLAGS LDFLAGS SHA_FLAGS EDITOR
 
 ## $(tgz) na koñcu, bo wersja spakowana musi byæ najpierw
 ## zaktualizowana
@@ -43,7 +45,7 @@ $(tasks):
 
 $(tgz):
 	rm -f ../$@/start ../$@/start.tgz
-	git commit -a -v || true
+	git commit -a -v || true; \
 	cd ../$@/; git commit -a -v || true
 	cd ../$@; make CXXFLAGS="$(CXXFLAGS) -DPROJECT_SHA=$(shell cd ../$@; git rev-parse HEAD) -DLIB_SHA=$(shell git rev-parse HEAD)"; \
 	tar -czf start.tgz ./* --exclude-from ../tasklib/tgz_exclude; \

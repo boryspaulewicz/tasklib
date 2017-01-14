@@ -45,11 +45,11 @@ public:
 
 };
 
-class Textview : public TextView{
+class TextView2 : public TextView{
 
 public:
 
-  Textview();
+  TextView2();
   
   void set_text(string text);
   
@@ -75,6 +75,7 @@ public:
 
 class UserValue : public TaskWindow{
 
+  string reg, message;
   VBox vbox;
   vector<Label*> valuel;
   vector<Entry*> valuee;
@@ -86,7 +87,7 @@ public:
 
   vector<string> value;
 
-  UserValue(vector<string> labels, bool visibility = true);
+  UserValue(vector<string> labels, bool visibility = true, string reg = "", string msg = "");
   
 };
 
@@ -107,7 +108,7 @@ class Instruction : public TaskWindow{ // Gtk::Window{
   
   VBox vbox;
   HBox hbox;
-  Textview tv;
+  TextView2 tv;
   vector<VButton*> buttons;
   
 public:
