@@ -271,7 +271,7 @@ void Task::run() {
 
         TRIAL_IS_OVER = false;
         set_state(0);
-        while (!TRIAL_IS_OVER && (keyp(KEYESCAPE) <= task_start) && (keyp(KEYLCONTROL) <= task_start)) {
+        while (!TRIAL_IS_OVER && (!(keyp(KEYESCAPE) > task_start) && (keyp(KEYLCONTROL) > task_start))) {
             trial_code(state());
             process_events();
         }
