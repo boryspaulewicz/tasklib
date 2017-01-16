@@ -29,7 +29,8 @@ void Media::init(){
     mouse_pressed.resize(Mouse::Button::ButtonCount);
     mouse_released.resize(Mouse::Button::ButtonCount);
     
-    string font_name = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
+    // string font_name = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
+    string font_name = "/usr/share/fonts/truetype/lato/Lato-Regular.ttf";
     if(!font.loadFromFile(font_name))
         throw(runtime_error("Nie udało się załadować domyślnej czcionki: " + font_name));
     text.setFont(font);
