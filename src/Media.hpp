@@ -11,6 +11,8 @@
 using namespace std;
 using namespace sf;
 
+enum class Alignment{LEFT, RIGHT, TOP, BOTTOM, CENTER};
+
 class Media : public States{
 
 private:
@@ -18,6 +20,7 @@ private:
   unique_ptr<RenderWindow> win;
   time_type some_key_pressed;
   vector<time_type> key_pressed, key_released, mouse_pressed, mouse_released;
+  int mouse_x_pos, mouse_y_pos;
   
 public:
 
@@ -34,7 +37,7 @@ public:
   Font font;
   Text text;
 
-  int width, height;
+  static int width, height;
 
   Media();
 
@@ -48,19 +51,62 @@ public:
   time_type keyr(int key){ return key_released[key]; }
   time_type mousep(int button){ return mouse_pressed[button]; }
   time_type mouser(int button){ return mouse_released[button]; }
-  
-  template<class T>
-  void center(T& obj);
+  int mouse_x(){ return mouse_x_pos; }
+  int mouse_y(){ return mouse_y_pos; }
 
+  template<class T>
+  static void center(T&obj);
+  static void center_position(Transformable& obj, float x_offset = 0, float y_offset = 0);
+  template<class T>
+  static void align_origin(T& obj, Alignment horizontal = Alignment::CENTER, Alignment vertical = Alignment::CENTER);
+  
   sf::String utf32(string s);
 
 };
 
 template<class T>
-void Media::center(T& obj){
+inline void Media::center(T& obj){
+    Media::align_origin(obj);
+    Media::center_position(obj);
+}
+
+inline void Media::center_position(Transformable& obj, float x_offset, float y_offset){
+    obj.setPosition(Vector2f(Media::width / 2 + x_offset * Media::width, Media::height / 2 + y_offset * Media::height));
+}
+
+template<class T>
+inline void Media::align_origin(T& obj, Alignment hor, Alignment vert){
   auto bounds = obj.getLocalBounds();
-  obj.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-  obj.setPosition(width / 2, height / 2);
+  float x, y;
+  switch(hor){
+      case Alignment::CENTER:
+          x = bounds.left + bounds.width / 2;
+          break;
+      case Alignment::LEFT:
+          x = 0;
+          break;
+      case Alignment::RIGHT:
+          x = bounds.left + bounds.width;
+          break;
+      default:
+          throw(runtime_error("Błędna wartość wyrównania horyzontalnego"));
+          break;
+  }
+  switch(vert){
+      case Alignment::CENTER:
+          y = bounds.top + bounds.height / 2;
+          break;
+      case Alignment::TOP:
+          y = 0;
+          break;
+      case Alignment::BOTTOM:
+          y = bounds.top + bounds.height;
+          break;
+      default:
+          throw(runtime_error("Błędna wartość wyrównania wertykalnego"));
+          break;
+  }
+  obj.setOrigin(x, y);
 }
 
 enum Key{
