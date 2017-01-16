@@ -252,13 +252,9 @@ void Task::run() {
         update_settings(&db);
 
     log("Rozpoczynam pętlę prób zadania");
+    unique_ptr<DataExchange> data_saver = nullptr;
     task_start = now_ms();
     for (current_trial = 0; !task_is_finished(); current_trial++) {
-
-        // Chcemy usuwać obiekt data_saver dopiero, gdy damy mu czas na
-        // wymianę danych, a ostatni obiekt ma być usunięty w momencie 
-        // opuszczenia pętli prób, a przed zamknięciem bazy
-        unique_ptr<DataExchange> data_saver;
 
         if (break_is_forced())
             forced_break();
@@ -271,13 +267,13 @@ void Task::run() {
 
         TRIAL_IS_OVER = false;
         set_state(0);
-        while (!TRIAL_IS_OVER && (!(keyp(KEYESCAPE) > task_start) && (keyp(KEYLCONTROL) > task_start))) {
+        while (!TRIAL_IS_OVER && (!(keyp(KEYESCAPE) > task_start))) { // && (keyp(KEYLCONTROL) > task_start))) {
             trial_code(state());
             process_events();
         }
         log("Próba zakończona");
 
-        if ((keyp(KEYESCAPE) > task_start) &&  (keyp(KEYLCONTROL) > task_start)) {
+        if ((keyp(KEYESCAPE) > task_start)) { // &&  (keyp(KEYLCONTROL) > task_start)) {
             break;
         }else{
             if (use_db) {
@@ -292,9 +288,10 @@ void Task::run() {
     }
 
     if (use_db) {
-        if (task_is_finished())
-            mark_task_finished();
-        Task::db.disconnect();
+      data_saver = nullptr;
+      if (task_is_finished())
+        mark_task_finished();
+      Task::db.disconnect();
     }
 
     Media::close();
