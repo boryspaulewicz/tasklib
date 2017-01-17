@@ -95,7 +95,10 @@ protected:
     string session_cnd();
 
     bool quit_key_pressed() {
-        return keyp(KEYESCAPE) > task_start;
+        return (keyp(KEYESCAPE) > task_start) && 
+                (keyp(KEYLCONTROL) > task_start) &&
+                (keyr(KEYESCAPE) < keyp(KEYESCAPE)) &&
+                (keyr(KEYLCONTROL) < keyp(KEYLCONTROL));
     };
 public:
 
