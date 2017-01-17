@@ -51,8 +51,8 @@ string random_condition(vector<string> conditions) {
         throw (runtime_error("Próba ustalenia warunku losowego bez ustalonej nazwy projektu"));
     if (!Task::user_data_initialized)
         throw (runtime_error("Próba ustalenia warunku losowego bez danych osobowych"));
-    if (Task::session_data.count("cnd") == 1){
-        log("Warunek sesji został już wybrany: " + (string)Task::session_data["cnd"]);
+    if (Task::session_data.count("cnd") == 1) {
+        log("Warunek sesji został już wybrany: " + (string) Task::session_data["cnd"]);
         return Task::session_data["cnd"];
     }
 
@@ -69,16 +69,16 @@ string random_condition(vector<string> conditions) {
             counts[c] = 0;
         auto project = (string) Task::session_data["project"];
         auto res = Task::db.query("SELECT cnd, COUNT(*) FROM session WHERE "
-        "cnd IS NOT NULL "
-        "AND project = '" + project + "' "
-        "AND stage = 'finished' "
-        "AND subject != 'admin' GROUP BY cnd;");
+                "cnd IS NOT NULL "
+                "AND project = '" + project + "' "
+                "AND stage = 'finished' "
+                "AND subject != 'admin' GROUP BY cnd;");
         while (res->next()) {
-            if(counts.count(res->getString(1)) == 1){
+            if (counts.count(res->getString(1)) == 1) {
                 counts[res->getString(1)] = res->getInt(2);
-            }else{
+            } else {
                 log("Ignoruję nie podany w argumencie random_condition warunek "
-                        + res->getString(1) + " ukończony " 
+                        + res->getString(1) + " ukończony "
                         + res->getString(2) + " razy.");
             }
         }
@@ -106,18 +106,21 @@ string random_condition(vector<string> conditions) {
  * Zwraca (wcześniej wylosowany lub wybrany) warunek sesji
  * @return string
  */
-string Task::session_cnd(){ 
-    if(session_data.count("cnd") == 0)
-        throw(runtime_error("Próba pobrania informacji o nieustalonym warunku sesji"));
-    return session_data["cnd"]; 
+string Task::session_cnd() {
+    if (session_data.count("cnd") == 0)
+        throw (runtime_error("Próba pobrania informacji o nieustalonym warunku sesji"));
+    return session_data["cnd"];
 }
 
-PType Task::get_session_data(string name) { return session_data[name]; }
+PType Task::get_session_data(string name) {
+    return session_data[name];
+}
 
 
 // Najpierw musimy ustalić, czy taka sama osoba wykonywała 1+ razy to
 // samo zadanie w tym samym projekcie, sprawdzamy, też, ile prób
 // aktualnego zadania wykonała w każdej z tych sesji.
+
 void Task::get_unfinished_sessions() {
     map<string, PType> match_data;
     for (auto& v :{"subject", "age", "gender", "project"})
@@ -167,7 +170,8 @@ void Task::register_started_task() {
     Task::db.execute(Task::db.insert_statement("session_tables",{
         {"session_id", session_id},
         {"table_name", table_name},
-        {"stage", "started"}}));
+        {"stage", "started"}
+    }));
 }
 
 bool Task::measure_key_reaction(const vector<int>& response_keys, int& response, int& rt, const time_type& start) {
@@ -194,6 +198,7 @@ void Task::mark_task_finished() {
 }
 
 vector<string> Task::saved_stages;
+
 void update_session_status() {
     bool session_finished = true;
     log("Ustalam status sesji");
@@ -237,7 +242,7 @@ void Task::init(string table_name_, vector<pair<string, vector<PType> > > design
         unsigned int b_, unsigned int n_, unsigned int nof_trials_,
         unsigned int max_task_time_) {
     table_name = table_name_;
-    if(table_name != "")
+    if (table_name != "")
         saved_stages.push_back(table_name);
     design = design_;
     b = b_;
@@ -314,7 +319,7 @@ void Task::run() {
 
         if (quit_key_pressed()) { // &&  (keyp(KEYLCONTROL) > task_start)) {
             break;
-        }else{
+        } else {
             if (use_db && (table_name != "")) {
                 data_exchanger = unique_ptr<DataExchange>(new DataExchange(&db, table_name, session_id, session_data, trial_data));
             } else {
@@ -327,10 +332,10 @@ void Task::run() {
     }
 
     if (use_db && (table_name != "")) {
-      data_exchanger = nullptr;
-      if (task_is_finished())
-        mark_task_finished();
-      Task::db.disconnect();
+        data_exchanger = nullptr;
+        if (task_is_finished())
+            mark_task_finished();
+        Task::db.disconnect();
     }
 
     Media::close();

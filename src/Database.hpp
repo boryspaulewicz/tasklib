@@ -20,33 +20,33 @@
 using namespace std;
 using namespace sql;
 
-class Database{
+class Database {
 private:
 
-  mutex db_mutex;
+    mutex db_mutex;
 
-  // tylko pobieramy wskaźnik do istniejącego wcześniej drivera
-  Driver *driver;
-  unique_ptr<Connection> con;
-  unique_ptr<Statement> stmt;
+    // tylko pobieramy wskaźnik do istniejącego wcześniej drivera
+    Driver *driver;
+    unique_ptr<Connection> con;
+    unique_ptr<Statement> stmt;
 
-  void exception(SQLException &e);
- 
+    void exception(SQLException &e);
+
 public:
 
-  string password;
-  
-  bool connection_is_closed();
-  void connect();
-  void disconnect();
-  unique_ptr<ResultSet> query(string q);
-  void execute(string q);
-  void register_session();
-  string match_statement(map<string, PType>& d);
-  string insert_statement(string table, map<string, PType> d);
-  bool table_exists(string table);
-  
-  ~Database();
+    string password;
+
+    bool connection_is_closed();
+    void connect();
+    void disconnect();
+    unique_ptr<ResultSet> query(string q);
+    void execute(string q);
+    void register_session();
+    string match_statement(map<string, PType>& d);
+    string insert_statement(string table, map<string, PType> d);
+    bool table_exists(string table);
+
+    ~Database();
 };
 
 #endif

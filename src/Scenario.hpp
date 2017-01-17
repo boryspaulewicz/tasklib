@@ -8,25 +8,25 @@
 #include<stdlib.h>
 using namespace std;
 
-class Scenario{
+class Scenario {
 private:
 
-  // k: liczba warunków, b: wielkość bloku permutowanego jako
-  // wielokrotność liczby warunków, n: liczba bloków
-  unsigned int k, b, n;
-  vector<unsigned int> scen;
+    // k: liczba warunków, b: wielkość bloku permutowanego jako
+    // wielokrotność liczby warunków, n: liczba bloków
+    unsigned int k, b, n;
+    vector<unsigned int> scen;
 
 public:
 
-  Scenario(unsigned int k_, unsigned int b_, unsigned int n_);
+    Scenario(unsigned int k_, unsigned int b_, unsigned int n_);
 
-  void permute();
+    void permute();
 
-  inline unsigned int get(unsigned int i){
-    return scen.at(i);
-  }
+    inline unsigned int get(unsigned int i) {
+        return scen.at(i);
+    }
 
-  unsigned int size();
+    unsigned int size();
 };
 
 #endif

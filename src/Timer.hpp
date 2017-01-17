@@ -20,7 +20,7 @@ using time_type = long int;
  */
 inline tp now();
 
-class Timer{
+class Timer {
 private:
     static tp start;
     static bool initialized;
@@ -32,29 +32,43 @@ public:
     static void init();
 };
 
-inline tp now(){ return high_resolution_clock::now(); }
+inline tp now() {
+    return high_resolution_clock::now();
+}
+
 /**
  * Zamienia odcinek czasu na milisekundy
  * @param d odcinek czasu
  * @return 
  */
-inline time_type ms(dur d){ return duration_cast<milliseconds>(d).count(); }
+inline time_type ms(dur d) {
+    return duration_cast<milliseconds>(d).count();
+}
+
 /**
  * Zamienia odcinek czasu na mikrosekundy
  * @param d odcinek czasu
  * @return 
  */
-inline time_type mu(dur d){ return duration_cast<microseconds>(d).count(); }
+inline time_type mu(dur d) {
+    return duration_cast<microseconds>(d).count();
+}
 // Zakładamy, że Timer jest zaincjalizowany, ale nie sprawdzamy tego
+
 /**
  * Czas w milisekundach od utworzenia pierwszego obiektu (dziedziczącego z) Timer
  * @return 
  */
-inline time_type now_ms(){ return ms(now() - Timer::start); }
+inline time_type now_ms() {
+    return ms(now() - Timer::start);
+}
+
 /**
  * Czas w mikrosekundach od utworzenia pierwszego obiektu (dziedziczącego z) Timer
  * @return 
  */
-inline time_type now_mu(){ return mu(now() - Timer::start); }
+inline time_type now_mu() {
+    return mu(now() - Timer::start);
+}
 
 #endif

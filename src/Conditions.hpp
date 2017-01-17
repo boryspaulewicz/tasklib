@@ -11,23 +11,24 @@
 #include"PType.hpp"
 using namespace std;
 
-class Conditions{
-
+class Conditions {
 public:
 
-  map<string,vector<PType> > factors;
-  map<string,vector<PType> > conditions;
-  
-  int nof_cnds;
-  vector<string> names;
+    map<string, vector<PType> > factors;
+    map<string, vector<PType> > conditions;
 
-  void fill_conditions();
-  
-  Conditions(vector<pair<string, vector<PType> > > design);
+    int nof_cnds;
+    vector<string> names;
 
-  PType get(string f, int c){ return conditions[f].at(c); }
+    void fill_conditions();
 
-  void print();
+    Conditions(vector<pair<string, vector<PType> > > design);
+
+    PType get(string f, int c) {
+        return conditions[f].at(c);
+    }
+
+    void print();
 };
 
 #endif
