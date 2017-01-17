@@ -45,15 +45,16 @@ string get_random_condition(vector<string> conditions) {
         throw (runtime_error("Próba ustalenia warunku losowego bez ustalonej nazwy projektu"));
     auto project = (string) Task::session_data["project"];
     log("Ustalam losowy warunek");
-    // liczebności również warunków, które jeszcze nie wystąpiły w bazie
-    // (wtedy = 0)
+    // uwzględniamy również liczebności tych warunków, które jeszcze nie 
+    // wystąpiły w bazie (wtedy = 0)
     map<string, int> counts;
     for (auto c : conditions)
         counts[c] = 0;
-    auto res = Task::db.query("SELECT cnd, COUNT(*), FROM session WHERE project = '" + project + "' "
-            "AND stage = 'finished' "
-            // "AND tag = '" + (session_data.count("tag") == 1 ? session_data["tag"] : "") + "' "
-            "AND subject != 'admin' GROUP BY cnd;");
+    auto res = Task::db.query("SELECT cnd, COUNT(*), FROM session WHERE "
+    "cnd IS NOT NULL "
+    "AND project = '" + project + "' "
+    "AND stage = 'finished' "
+    "AND subject != 'admin' GROUP BY cnd;");
     while (res->next()) {
         counts[res->getString(1)] = res->getInt(2);
         conditions.push_back(res->getString(1));
@@ -213,9 +214,6 @@ void Task::init(string table_name_, vector<pair<string, vector<PType> > > design
     if (getenv("TASKLIB_DEBUG") != nullptr)
         debug = true;
 
-    if (table_name == "")
-        throw (runtime_error("Nie podano nazwy tabeli danych"));
-
     initialized = true;
     finished = false;
 }
@@ -240,7 +238,7 @@ void Task::run() {
 
     session_data["lib_sha"] = lib_sha;
     session_data["project_sha"] = project_sha;
-    if (use_db) {
+    if (use_db && (table_name != "")) {
         Task::db.connect();
         if (session_id == SESSION_ID_UNINITIALIZED)
             register_session();
@@ -248,7 +246,7 @@ void Task::run() {
     }
 
     Media::init();
-    if (use_db)
+    if (use_db && (table_name != ""))
         update_settings(&db);
 
     log("Rozpoczynam pętlę prób zadania");
@@ -276,7 +274,7 @@ void Task::run() {
         if ((keyp(KEYESCAPE) > task_start)) { // &&  (keyp(KEYLCONTROL) > task_start)) {
             break;
         }else{
-            if (use_db) {
+            if (use_db && (table_name != "")) {
                 data_saver = unique_ptr<DataExchange>(new DataExchange(&db, table_name, session_id, session_data, trial_data));
             } else {
                 string msg = "Dane z próby:\n";
@@ -287,7 +285,7 @@ void Task::run() {
         }
     }
 
-    if (use_db) {
+    if (use_db && (table_name != "")) {
       data_saver = nullptr;
       if (task_is_finished())
         mark_task_finished();

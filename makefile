@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 ## make tgz=test utworzy archiwum projektu test z plikami sha.
 tgz=
 
@@ -14,7 +16,7 @@ SHA_FLAGS=-DLIB_SHA="dev" -DPROJECT_SHA="dev"
 
 export CXXFLAGS LDFLAGS SHA_FLAGS EDITOR
 
-## $(tgz) na koñcu, bo wersja spakowana musi byæ najpierw
+## $(tgz) na koÅ„cu, bo wersja spakowana musi byÄ‡ najpierw
 ## zaktualizowana
 tasks:=$(tgz)
 
@@ -24,7 +26,7 @@ UTILS= project tests
 
 all: libtask.a $(UTILS) test $(tasks) $(tgz)
 
-clear:
+clean:
 	rm -f libtask.a $(OBJS) $(UTILS) \
 
 libtask.a: $(OBJS:o=cpp) $(OBJS:o=hpp)
@@ -41,7 +43,7 @@ test:
 	cd test; make
 
 $(tasks):
-	cd ../$@; make start CXXFLAGS="$(CXXFLAGS) -DLIB_SHA=\"dev\" -DPROJECT_SHA=\"dev\""
+	cd ../$@; make start CXXFLAGS="$(CXXFLAGS) $(SHA_FLAGS)"
 
 $(tgz):
 	rm -f ../$@/start ../$@/start.tgz

@@ -126,13 +126,11 @@ int main(){
    
     unique_ptr<Instruction>(new Instruction(string_from_file("./instrukcja.utxt"), {"Dalej"}));
     
-    use_db = false;
-    unique_ptr<SRT>(new SRT())->run("srt_practice", {{"stage", {"practice"}}}, 5);
+    unique_ptr<SRT>(new SRT())->run("", {{"stage", {"practice"}}}, 5);
         
     unique_ptr<Instruction>(new Instruction("Teraz rozpocznie się właściwy etap zadania. Ten etap potrwa dłużej, niż etap treningowy i nie będą już pokazywane informacje o Twoim czasie reakcji.\n\n"
             "Naciśnij przycisk 'Dalej', aby kontynuować."));
     
-    use_db = true;
     Task::db.password = "task";
     string table_name = "srt_test";
     unique_ptr<SRT>(new SRT())->run(table_name, {{"stage", {"test"}}}, 100);
