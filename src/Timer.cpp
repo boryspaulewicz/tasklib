@@ -3,9 +3,15 @@
 tp Timer::start;
 bool Timer::initialized = false;
 
-Timer::Timer(){
-    if(!Timer::initialized){
-        Timer::start = high_resolution_clock::now();
-        Timer::initialized = true;
+void Timer::init() {
+    if(!initialized){
+        start = high_resolution_clock::now();
+        initialized = true;
     }
 }
+
+/**
+ * Inicjalizacja zegara, wywoływana niejawnie przez konstruktor. Musi być
+ * wywołana przed pierwszym użyciem funkcji now[_ms|mu], ms, mu.
+ */
+Timer::Timer(){ init(); }

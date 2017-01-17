@@ -29,6 +29,7 @@ private:
     friend time_type now_mu();
 public:
     Timer();
+    static void init();
 };
 
 inline tp now(){ return high_resolution_clock::now(); }
