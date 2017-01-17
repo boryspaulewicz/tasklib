@@ -269,7 +269,7 @@ void Task::run() {
         set_state(0);
         while (!TRIAL_IS_OVER && (!(keyp(KEYESCAPE) > task_start))) { // && (keyp(KEYLCONTROL) > task_start))) {
             trial_code(state());
-            process_events();
+            process_inputs();
         }
         log("Próba zakończona");
 
@@ -307,7 +307,7 @@ void Task::forced_break() {
     text.setString(get_settings("msg") == "" ? "Przerwa w zadaniu" : get_settings("msg"));
     center(text);
     while (break_is_forced()) {
-        process_events();
+        process_inputs();
         clear(bg);
         draw(text);
         display();
@@ -317,7 +317,7 @@ void Task::forced_break() {
     center(text);
     time_type start = now_ms();
     while (some_keyp() < start) {
-        process_events();
+        process_inputs();
         clear(bg);
         draw(text);
         display();

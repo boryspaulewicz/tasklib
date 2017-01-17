@@ -122,30 +122,21 @@ class SRT : public Task{
 int main(){
     
     set_project_name("srt");
-    get_user_data(user_data_instr);
-    
-    SRT task;
-    
+    get_user_data(user_data_instr);    
+   
     unique_ptr<Instruction>(new Instruction(string_from_file("./instrukcja.utxt"), {"Dalej"}));
     
-    task.init("test", {{"stage", {"practice"}}}, 5);
-    task.run();
-    
-    string choice;
-    while(choice != "Dalej"){
-        unique_ptr<Instruction> instr = unique_ptr<Instruction>(new Instruction("Jeżeli nie masz wątpliwości na temat przebiegu zadania, naciśnij przycisk 'Dalej'.\n\n"
-                "W przeciwnym razie możesz powtórzyć próbę treningową.", {"Dalej", "Powtórz"}));
-                choice = instr->value;
-                if(choice == "Powtórz")
-                    task.init("test", {{"stage", {"practice"}}}, 5);
-                    task.run();
-    }
-    
+    use_db = false;
+    unique_ptr<SRT>(new SRT())->run("srt_practice", {{"stage", {"practice"}}}, 5);
+        
     unique_ptr<Instruction>(new Instruction("Teraz rozpocznie się właściwy etap zadania. Ten etap potrwa dłużej, niż etap treningowy i nie będą już pokazywane informacje o Twoim czasie reakcji.\n\n"
             "Naciśnij przycisk 'Dalej', aby kontynuować."));
     
-    task.init("test", {{"stage", {"test"}}}, 100);
-    task.run();
-    
+    use_db = true;
+    Task::db.password = "task";
+    string table_name = "srt_test";
+    unique_ptr<SRT>(new SRT())->run(table_name, {{"stage", {"test"}}}, 100);
+    update_session_status({table_name});
+
     return 0;
 }

@@ -17,63 +17,77 @@ class Media : public States{
 
 private:
 
-  unique_ptr<RenderWindow> win;
-  time_type some_key_pressed;
-  vector<time_type> key_pressed, key_released, mouse_pressed, mouse_released;
-  int mouse_x_pos, mouse_y_pos;
+  static unique_ptr<RenderWindow> win;
+  static time_type some_key_pressed;
+  static vector<time_type> key_pressed, key_released, mouse_pressed, mouse_released;
+  static int mouse_x_pos, mouse_y_pos;
   
 public:
 
-  void set_active(){ win->setActive(); }
-  void display(){ win->display(); }
-  void clear(const Color& color = Color(0, 0, 0, 255)){ win->clear(color); }
-  void draw(const Drawable &drawable){ win->draw(drawable); }
+  static void set_active(){ win->setActive(); }
+  static void display(){ win->display(); }
+  static void clear(const Color& color = Color(0, 0, 0, 255)){ win->clear(color); }
+  static void draw(const Drawable &drawable){ win->draw(drawable); }
   
-  Color bg = Color::Black, fg = Color::White;
-  void white_on_black();
+  static Color bg, fg;
   
-  Event event;
-  RectangleShape rect;
-  Font font;
-  Text text;
+  static Event event;
+  static RectangleShape rect;
+  static Font font;
+  static Text text;
 
   static int width, height;
 
-  Media();
-
-  void init();
-  void close();
+  static void init();
+  static void close();
   
-  void process_events();
+  static void process_inputs();
 
-  time_type some_keyp(){ return some_key_pressed; }
-  time_type keyp(int key){ return key_pressed[key]; }
-  time_type keyr(int key){ return key_released[key]; }
-  time_type mousep(int button){ return mouse_pressed[button]; }
-  time_type mouser(int button){ return mouse_released[button]; }
-  int mouse_x(){ return mouse_x_pos; }
-  int mouse_y(){ return mouse_y_pos; }
+  static time_type some_keyp(){ return some_key_pressed; }
+  static time_type keyp(int key){ return key_pressed[key]; }
+  static time_type keyr(int key){ return key_released[key]; }
+  static time_type mousep(int button){ return mouse_pressed[button]; }
+  static time_type mouser(int button){ return mouse_released[button]; }
+  static int mouse_x(){ return mouse_x_pos; }
+  static int mouse_y(){ return mouse_y_pos; }
 
   template<class T>
   static void center(T&obj);
   static void center_position(Transformable& obj, float x_offset = 0, float y_offset = 0);
   template<class T>
   static void align_origin(T& obj, Alignment horizontal = Alignment::CENTER, Alignment vertical = Alignment::CENTER);
-  
-  sf::String utf32(string s);
+  static sf::String utf32(string s);
 
 };
 
+/**
+ * Ustala położenie origin na środek (obrysu) obiektu i przesuwa origin na
+ * środek ekranu
+ * @param obj
+ */
 template<class T>
 inline void Media::center(T& obj){
     Media::align_origin(obj);
     Media::center_position(obj);
 }
 
+/**
+ * Ustala położenie origin obiektu graficznego na środek/względem środka ekranu
+ * @param obj Obiekt dziedziczący z Transformable
+ * @param x_offset poziome przesunięcie origin względem środka w proporcjach ekranu
+ * @param y_offset pionowe przesunięcie origin względem środka w proporcjach ekranu
+ */
 inline void Media::center_position(Transformable& obj, float x_offset, float y_offset){
     obj.setPosition(Vector2f(Media::width / 2 + x_offset * Media::width, Media::height / 2 + y_offset * Media::height));
 }
 
+/**
+ * Ustala punkt origin względem prostokątu ograniczającego obiekt graficzny.
+ * Patrz enum class Alignment.
+ * @param obj Obiekt implementujący metody setOrigin i getLocalBounds
+ * @param horizontal położenie origin w poziomie
+ * @param vertical położenie origin w pionie
+ */
 template<class T>
 inline void Media::align_origin(T& obj, Alignment hor, Alignment vert){
   auto bounds = obj.getLocalBounds();

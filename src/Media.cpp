@@ -2,13 +2,24 @@
 
 #include "Media.hpp"
 
+unique_ptr<RenderWindow> Media::win;
+Event Media::event;
+
+time_type Media::some_key_pressed;
+vector<time_type> Media::key_pressed;
+vector<time_type> Media::key_released;
+vector<time_type> Media::mouse_pressed;
+vector<time_type> Media::mouse_released;
+int Media::mouse_x_pos;
+int Media::mouse_y_pos;
+
 int Media::width;
 int Media::height;
-
-void Media::white_on_black(){
-    bg = Color(Color::Black);
-    fg = Color(Color::White);
-}
+Color Media::fg;
+Color Media::bg;
+Font Media::font;
+Text Media::text;
+RectangleShape Media::rect;
 
 void Media::init(){
     
@@ -16,7 +27,10 @@ void Media::init(){
     win->setVerticalSyncEnabled(true);
     win->setMouseCursorVisible(false);
     
-    white_on_black();
+    width = VideoMode().getDesktopMode().width; 
+    height = VideoMode().getDesktopMode().height;
+    fg = Color::White;
+    bg = Color::Black;
     
     // Inaczej zostają dane z poprzedniego wykonania pętli prób
     some_key_pressed = 0;
@@ -50,16 +64,21 @@ void Media::close(){
     win = nullptr;
 }
 
-Media::Media(){
-    width = VideoMode().getDesktopMode().width; 
-    height = VideoMode().getDesktopMode().height;
-}
-
+/**
+ * Funkcja pomocnicza, zamieniająca string w utf8 na utf32 używany przez SFML
+ * @param s
+ * @return 
+ */
 sf::String Media::utf32(string s){
     return String::fromUtf8(s.begin(), s.end());
 }
 
-void Media::process_events(){
+/**
+ * Uaktualnia informacje o momencie wystąpienia ewentualnych zdarzeń wejścia,
+ * takich jak naciśnięcie/zwolnienie klawisza, przycisku myszki, czy przesunięcie
+ * kursora.
+ */
+void Media::process_inputs(){
     while(win->pollEvent(event)){
         switch(event.type){
             case Event::KeyPressed :
