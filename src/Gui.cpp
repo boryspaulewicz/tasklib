@@ -57,8 +57,8 @@ void UserData::button_pressed(){
   }
   if(trim(name.get_text()) == "admin"){
     data["subject"] = "admin";
-    data["age"] = "0";
-    data["gender"] = "M";
+    data["age"] = trim(age.get_text()) == "" ? "0" : trim(age.get_text());
+    data["gender"] = gender.get_active_text() == "" ? "M" : gender.get_active_text();
     log("Podano identyfikator administratora");
     close();
     return;

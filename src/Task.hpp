@@ -63,6 +63,7 @@ protected:
   unsigned int nof_trials;
   unsigned int max_task_time;
   string table_name;
+  static vector<string> saved_stages;
   bool initialized = false, finished = false;
   
   unique_ptr<Conditions> cs;
@@ -74,10 +75,10 @@ protected:
   static bool user_data_initialized;
   map<string, PType> trial_data;
 
-  void register_session();
-  void register_task();
+  void register_started_session();
+  void register_started_task();
   void mark_task_finished();
-  friend void update_session_status(vector<string> table_names);
+  friend void update_session_status();
   
   void set_trial_data(string name, PType value){
     if(trial_data.count(name) == 1)
@@ -87,7 +88,9 @@ protected:
   void set_trial_data(initializer_list<pair<string, PType> >values){ for(auto& v : values)set_trial_data(v.first, v.second); }
   
   PType cnd(string f){ return cs->get(f, scen->get(current_trial)); }
-
+  string session_cnd();
+  
+  bool quit_key_pressed(){ return keyp(KEYESCAPE) > task_start; };
  public:
 
   void get_unfinished_sessions(void);
@@ -98,7 +101,7 @@ protected:
 
   friend void set_project_name(string project);
   friend void get_user_data(string instruction);
-  friend string get_random_condition(vector<string> conditions = {});
+  friend string random_condition(vector<string> conditions = {});
   
   PType get_session_data(string name);
   
@@ -138,7 +141,7 @@ vector<int> vseq(int from, int to);
 int random_int(int min, int max);
 void set_project_name(string project);
 void get_user_data(string fname);
-string get_random_condition(string task_name, vector<string> conditions);
-void update_session_status(vector<string> table_names);
+string random_condition(vector<string> conditions);
+void update_session_status();
 
 #endif

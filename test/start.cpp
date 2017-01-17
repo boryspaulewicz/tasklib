@@ -6,6 +6,9 @@
 
 #define FIXATION_TIME 1000
 #define PRE_FIXATION_TIME 500
+#define DELAY_MIN 1000
+#define DELAY_MAX 2000
+#define STIM_SIZE .1
 
 class SRT : public Task{
     public:
@@ -27,7 +30,8 @@ class SRT : public Task{
                 
                 case START:
                     intensity = random_int(10, 255);
-                    delay = random_int(1000, 2000);
+                    delay = map<string, int>{{"random_delay", random_int(DELAY_MIN, DELAY_MAX)}, 
+                    {"fixed_delay", (DELAY_MIN + DELAY_MAX) / 2}}[session_cnd()];
                     set_state(PRE_FIXATION);
                     return;
                     
@@ -76,9 +80,10 @@ class SRT : public Task{
                     return;
                     
                 case DRAW_STIM:
-                    rect.setSize(Vector2f(width * .1, width * .1));
+                    rect.setSize(Vector2f(width * STIM_SIZE, width * STIM_SIZE));
                     center(rect);
-                    rect.setFillColor(Color(intensity, intensity, intensity));
+                    rect.setFillColor(map<string, Color>{{"fixed_delay", Color(intensity, 0, 0)},
+                    {"random_delay", Color(0, intensity, 0)}}[session_cnd()]);
                     clear(bg);
                     draw(rect);
                     display();
@@ -119,22 +124,27 @@ class SRT : public Task{
         }
 };
 
+// Sprawdzać:
+//
+// - czy zapisuje dane, czy uaktualnia status etapów zadania i całej sesji
+// - czy losowy wybór warunków i wybór admina działa 
 int main(){
-    
+    Task::db.password = "task";
     set_project_name("srt");
     get_user_data(user_data_instr);    
+    auto cnd = random_condition({"random_delay", "fixed_delay"});
    
-    unique_ptr<Instruction>(new Instruction(string_from_file("./instrukcja.utxt"), {"Dalej"}));
-    
-    unique_ptr<SRT>(new SRT())->run("", {{"stage", {"practice"}}}, 5);
-        
-    unique_ptr<Instruction>(new Instruction("Teraz rozpocznie się właściwy etap zadania. Ten etap potrwa dłużej, niż etap treningowy i nie będą już pokazywane informacje o Twoim czasie reakcji.\n\n"
-            "Naciśnij przycisk 'Dalej', aby kontynuować."));
-    
-    Task::db.password = "task";
-    string table_name = "srt_test";
-    unique_ptr<SRT>(new SRT())->run(table_name, {{"stage", {"test"}}}, 100);
-    update_session_status({table_name});
-
+    unique_ptr<Instruction>(new Instruction("Warunek: " + cnd + "\n\n" +
+    string_from_file("./instrukcja.utxt"), {"Dalej"}));
+    unique_ptr<SRT>(new SRT())->run("", {{"stage", {"practice"}}}, 2);
+    unique_ptr<Instruction>(new Instruction("Teraz rozpocznie się właściwy etap zadania. "
+    "Ten etap potrwa dłużej, niż etap treningowy i nie będą już pokazywane informacje "
+    "o Twoim czasie reakcji.\n\n"
+    "Naciśnij przycisk 'Dalej', aby kontynuować."));
+    unique_ptr<SRT>(new SRT())->run("srt_test1", {{"stage", {"test"}}}, 3);
+    unique_ptr<Instruction>(new Instruction("I jeszcze jeden etap właściwy..."));
+    unique_ptr<SRT>(new SRT())->run("srt_test2", {{"stage", {"test"}}}, 3);
+    update_session_status();
+    unique_ptr<Instruction>(new Instruction(session_over_instr));
     return 0;
 }
