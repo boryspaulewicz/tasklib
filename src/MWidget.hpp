@@ -3,21 +3,16 @@
 
 #include "Media.hpp"
 
-enum class MouseButton {
-    LBP, RBP, LBR, RBR, NONE
-};
-
 class MWidget : public RectangleShape {
 private:
     bool active = false;
-    decltype(now()) start;
     Text text;
     RectangleShape bar;
     Color highlight = Color::Green, inactive = Color::Blue;
 
-    bool mouse_inside(int x, int y) {
-        return false;
-    }
+    void mouse_move(int x, int y){ }
+    void mouse_clicked(int x, int y, int button){ }
+    void mouse_released(int x, int y, int button){ }
 
 public:
 
@@ -31,16 +26,8 @@ public:
         text.setOutlineColor(Color::Black);
     }
 
-    void set_active() {
-        if (!active) {
-            active = true;
-            start = now();
-        }
-    }
-
-    void set_inactive() {
-        active = false;
-    }
+    void set_active() { if (!active)active = true; }
+    void set_inactive() { active = false; }
 };
 
 #endif /* WIDGET_HPP */

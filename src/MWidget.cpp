@@ -11,7 +11,7 @@
  * Created on 15 stycznia 2017, 11:17
  */
 
-#include "Widget.hpp"
+#include "MWidget.hpp"
 
 
 
