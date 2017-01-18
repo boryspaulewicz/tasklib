@@ -24,7 +24,6 @@ public:
     MWidget(const string label) {
         text.setFont(Media::font);
         text.setString(label);
-
         setFillColor(Color::Black);
         setOutlineColor(Color::White);
         setOutlineThickness(1);

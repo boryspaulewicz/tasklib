@@ -5,11 +5,11 @@ tgz=
 
 EDITOR=emacs
 
-CXXFLAGS= -O3 -finline-functions -std=c++11 -g -O3 -I../tasklib/src `pkg-config gtkmm-3.0 --cflags`
+CXXFLAGS= -std=c++11 -g -I../tasklib/src `pkg-config gtkmm-3.0 --cflags` -O3 -finline-functions
 
 LDFLAGS= -L../tasklib `pkg-config sfml-all --libs` `pkg-config gtkmm-3.0 --libs` -lmysqlcppconn -pthread
 
-OBJS= Log.o Utils.o Common.o PType.o Conditions.o Scenario.o Gui.o Database.o DataExchange.o Timer.o Media.o Task.o
+OBJS= Log.o Utils.o Common.o PType.o Conditions.o Scenario.o Gui.o Database.o DataExchange.o Timer.o Graphics.o Media.o Task.o
 OBJS:= $(addprefix ./src/,$(OBJS))
 
 SHA_FLAGS=-DLIB_SHA="dev" -DPROJECT_SHA="dev"

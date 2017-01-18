@@ -313,7 +313,8 @@ void Task::run() {
         set_state(0);
         while (!(TRIAL_IS_OVER || quit_key_pressed())) {
             trial_code(state());
-            process_inputs();
+            while(win_poll_event())
+                process_inputs();
         }
         log("Próba zakończona");
 

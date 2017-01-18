@@ -1,5 +1,31 @@
 #include "Utils.hpp"
 
+string string_from_file(string fname) {
+    ifstream f;
+    f.open(fname);
+    if (!f.good()) {
+        throw (runtime_error("Nie udało się otworzyć pliku " + fname));
+        exit(1);
+    }
+    stringstream contents;
+    contents << f.rdbuf();
+    return contents.str();
+}
+
+locale loc;
+string tolower(string s){
+    string res = s;
+    for(int i = 0; i < s.size(); i++)
+        res[i] = tolower(s[i], loc);
+    return res;
+}
+string toupper(string s){
+    string res = s;
+    for(int i = 0; i < s.size(); i++)
+        res[i] = toupper(s[i], loc);
+    return res;
+}
+
 string trim(string str) {
     size_t first = str.find_first_not_of(' ');
     if (first == string::npos)

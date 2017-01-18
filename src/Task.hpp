@@ -26,6 +26,7 @@
 #include "DataExchange.hpp"
 #include "Gui.hpp"
 #include "Media.hpp"
+#include "Graphics.hpp"
 using namespace std;
 // Musi być uwzględnione po .hpp z Task'a, inaczej problem z ms(dur d)
 #include <SFML/Graphics.hpp>

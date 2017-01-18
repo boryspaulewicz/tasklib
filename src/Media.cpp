@@ -80,27 +80,25 @@ sf::String Media::utf32(string s) {
  * kursora.
  */
 void Media::process_inputs() {
-    while (win->pollEvent(event)) {
-        switch (event.type) {
-            case Event::KeyPressed:
-                some_key_pressed = now_ms();
-                key_pressed[event.key.code] = some_key_pressed;
-                break;
-            case Event::KeyReleased:
-                key_released[event.key.code] = now_ms();
-                break;
-            case Event::MouseButtonPressed:
-                mouse_pressed[event.mouseButton.button] = now_ms();
-                break;
-            case Event::MouseButtonReleased:
-                mouse_released[event.mouseButton.button] = now_ms();
-                break;
-            case Event::MouseMoved:
-                mouse_x_pos = event.mouseMove.x;
-                mouse_y_pos = event.mouseMove.y;
-                break;
-            default:
-                break;
-        }
+    switch (event.type) {
+        case Event::KeyPressed:
+            some_key_pressed = now_ms();
+            key_pressed[event.key.code] = some_key_pressed;
+            break;
+        case Event::KeyReleased:
+            key_released[event.key.code] = now_ms();
+            break;
+        case Event::MouseButtonPressed:
+            mouse_pressed[event.mouseButton.button] = now_ms();
+            break;
+        case Event::MouseButtonReleased:
+            mouse_released[event.mouseButton.button] = now_ms();
+            break;
+        case Event::MouseMoved:
+            mouse_x_pos = event.mouseMove.x;
+            mouse_y_pos = event.mouseMove.y;
+            break;
+        default:
+            break;
     }
 }

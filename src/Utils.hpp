@@ -9,12 +9,12 @@
 #include <map>
 using namespace std;
 
+string string_from_file(string fname);
+string tolower(string);
+string toupper(string);
 string trim(string str);
-
 bool rmatch(string pattern, string str);
-
 int random_int(int min, int max);
-
 template<typename T>
 vector<T> vseq(T from, T to) {
     vector<T> res;
@@ -22,7 +22,6 @@ vector<T> vseq(T from, T to) {
         res.push_back(from);
     return res;
 }
-
 template<typename T>
 void permute(vector<T>& scen) {
     T stored;

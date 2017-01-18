@@ -56,106 +56,27 @@ public:
 
 };
 
-//! Przerobić na wersję z pojedynczym widocznym pytaniem, albo dodać zaznaczanie
-// brakujących odpowiedzi.
-
 class QuestionnaireItem : public TaskWindow {
     using ButtonType = Gtk::RadioButton;
 private:
 
     TextView2 tv_instruction;
-    vector<Label*> tv_questions;
-    vector<RadioButtonGroup> groups;
+    vector<Label*> lbl_questions;
+    vector<RadioButtonGroup> answer_groups;
     vector<vector<ButtonType*>> answer_buttons;
+    vector<Frame*> question_frames;
     Gtk::Button ok_button;
 
-    void answer_on_clicked(int question, int v) {
-        value[question] = v;
-    }
+    void answer_on_clicked(int question, int v);
 
-    void ok_button_clicked() {
-        bool all_answered = true;
-        for (int i = 0; i < value.size(); i++)
-            if (value[i] == -1) {
-                all_answered = false;
-                break;
-            }
-        if (all_answered) {
-            close();
-        } else {
-            MessageDialog msg(*this, "Nie podano wszystkich odpowiedzi");
-            msg.run();
-        }
-    }
-
+    void ok_button_clicked();
+    
 public:
 
     vector<int> value;
 
     QuestionnaireItem(string instruction, vector<string> questions,
-            vector<string> answers, float width = 0.5, float height = 0.9) :
-    ok_button("Dalej") {
-        init();
-        set_default_size(get_screen()->get_width() * width,
-                get_screen()->get_height() * height);
-
-        value.resize(questions.size(), 0);
-        for (int q = 0; q < questions.size(); q++) {
-            //            TextView2* tv = new TextView2();
-            //            tv->set_text(questions.at(q));
-            //            tv_questions.push_back(tv);
-            Label* l = new Label(questions[q]);
-            tv_questions.push_back(l);
-            {
-                vector<ButtonType*> vrb;
-                answer_buttons.push_back(vrb);
-            }
-            // Niewidoczny pierwszy przycisk, który definiuje grupę
-            ButtonType* rb = new ButtonType("");
-            groups.push_back(rb->get_group());
-            for (int a = 0; a < answers.size(); a++) {
-                ButtonType* rb = new ButtonType(answers[a]);
-                rb->signal_clicked().connect(sigc::bind<int, int>(sigc::mem_fun(*this,
-                        &QuestionnaireItem::answer_on_clicked), q, a));
-                rb->set_group(groups[q]);
-                answer_buttons.at(q).push_back(rb);
-            }
-            // Dodawanie przycisków do grupy wywołuje sygnał clicked.
-            value[q] = -1;
-        }
-
-        VBox vbox;
-        frame.add(vbox);
-        tv_instruction.set_text(instruction);
-        tv_instruction.set_border_width(10);
-        vbox.pack_start(tv_instruction, false, false);
-        ScrolledWindow sw;
-        vbox.pack_start(sw, true, true);
-        VBox vbox2;
-        sw.add(vbox2);
-        vbox.pack_start(vbox2);
-        for (int q = 0; q < questions.size(); q++) {
-            HBox* hbox = new HBox;
-            vbox2.pack_start(*hbox);
-            hbox->pack_start(*tv_questions[q], false, false);
-            Label* l = new Label("");
-            vbox2.pack_start(*l, false, false);
-            hbox = new HBox;
-            vbox2.pack_start(*hbox);
-            for (int a = 0; a < answers.size(); a++) {
-                hbox->pack_start(*answer_buttons[q][a], false, false);
-            }
-        }
-        HBox hbox2;
-        hbox2.set_border_width(10);
-        vbox.pack_end(hbox2, false, false);
-        hbox2.pack_end(ok_button, true, true);
-        ok_button.signal_clicked().connect(sigc::mem_fun(*this,
-                &QuestionnaireItem::ok_button_clicked));
-
-        cout << "Uruchamiam qi" << endl;
-        run();
-    }
+            vector<string> answers, float width = 0.5, float height = 0.9);
 
 };
 

@@ -8,6 +8,8 @@ COMMON= Common.hpp Utils.hpp Log.hpp
 
 Task.o: Task.cpp *.hpp
 
+Graphics.o: Media.hpp
+
 Media.o: Timer.hpp PType.hpp
 
 DataExchange.o: Database.hpp

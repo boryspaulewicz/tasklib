@@ -53,6 +53,7 @@ public:
     static void init();
     static void close();
 
+    static bool win_poll_event(){ return win->pollEvent(event); }
     static void process_inputs();
 
     static time_type some_keyp() {

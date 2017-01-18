@@ -37,16 +37,91 @@ void TextView2::set_text(string text) {
     get_buffer()->set_text(text);
 }
 
-string string_from_file(string fname) {
-    ifstream f;
-    f.open(fname);
-    if (!f.good()) {
-        throw (runtime_error("Nie udało się otworzyć pliku " + fname));
-        exit(1);
+void QuestionnaireItem::answer_on_clicked(int question, int v){
+    value[question] = v;
+}
+
+void QuestionnaireItem::ok_button_clicked(){
+        bool all_answered = true;
+        for (int i = 0; i < value.size(); i++)
+            if (value[i] == -1) {
+                all_answered = false;
+            }else{
+                question_frames[i]->set_visible(false); // setset_opacity(.5);
+            }
+        if (all_answered) {
+            close();
+        } else {
+            MessageDialog msg(*this, "Proszę odpowiedzieć na wszystkie pytania");
+            msg.run();
+        }
+}
+
+QuestionnaireItem::QuestionnaireItem(string instruction, vector<string> questions, vector<string> answers, float width, float height) :
+ok_button("Dalej") {
+    init();
+    set_default_size(get_screen()->get_width() * width,
+            get_screen()->get_height() * height);
+
+    value.resize(questions.size(), 0);
+    for (int q = 0; q < questions.size(); q++) {
+        Label* l = new Label(questions[q]);
+        lbl_questions.push_back(l);
+        {
+            vector<ButtonType*> vrb;
+            answer_buttons.push_back(vrb);
+        }
+        // Niewidoczny pierwszy przycisk, który definiuje grupę
+        ButtonType* rb = new ButtonType("");
+        answer_groups.push_back(rb->get_group());
+        for (int a = 0; a < answers.size(); a++) {
+            ButtonType* rb = new ButtonType(answers[a]);
+            rb->signal_clicked().connect(sigc::bind<int, int>(sigc::mem_fun(*this,
+                    &QuestionnaireItem::answer_on_clicked), q, a));
+            rb->set_group(answer_groups[q]);
+            answer_buttons.at(q).push_back(rb);
+        }
+        // Dodawanie przycisków do grupy wywołuje sygnał clicked.
+        value[q] = -1;
     }
-    stringstream contents;
-    contents << f.rdbuf();
-    return contents.str();
+
+    VBox vbox;
+    frame.add(vbox);
+    tv_instruction.set_text(instruction);
+    tv_instruction.set_border_width(10);
+    vbox.pack_start(tv_instruction, false, false);
+    ScrolledWindow sw;
+    vbox.pack_start(sw, true, true);
+    VBox questions_vbox;
+    sw.add(questions_vbox);
+    vbox.pack_start(questions_vbox);
+    for (int q = 0; q < questions.size(); q++) {
+        Frame* question_frame = new Frame;
+        question_frames.push_back(question_frame);
+        questions_vbox.pack_start(*question_frame, false, false);
+        VBox* question_vbox = new VBox;
+        question_frame->add(*question_vbox);
+        // Pytanie
+        HBox* question_hbox = new HBox;
+        question_hbox->set_border_width(5);
+        question_vbox->pack_start(*question_hbox);
+        question_hbox->pack_start(*lbl_questions[q], false, false);
+        // Odpowiedzi
+        HBox* items_hbox = new HBox;
+        items_hbox->set_border_width(5);
+        question_vbox->pack_start(*items_hbox);
+        for (int a = 0; a < answers.size(); a++) {
+            items_hbox->pack_start(*answer_buttons[q][a], false, false);
+        }
+    }
+    HBox ok_button_hbox;
+    ok_button_hbox.set_border_width(10);
+    vbox.pack_end(ok_button_hbox, false, false);
+    ok_button_hbox.pack_end(ok_button, false, false);
+    ok_button.signal_clicked().connect(sigc::mem_fun(*this,
+            &QuestionnaireItem::ok_button_clicked));
+
+    run();
 }
 
 void UserData::button_pressed() {
@@ -70,7 +145,7 @@ void UserData::button_pressed() {
         msg.run();
         return;
     }
-    data["subject"] = trim(name.get_text());
+    data["subject"] = tolower(trim(name.get_text()));
 
     if (trim(age.get_text()) == string("")) {
         MessageDialog msg(*this, "Brak danych w polu Wiek");
