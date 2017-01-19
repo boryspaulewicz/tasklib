@@ -79,7 +79,7 @@ sf::String Media::utf32(string s) {
  * takich jak naciśnięcie/zwolnienie klawisza, przycisku myszki, czy przesunięcie
  * kursora.
  */
-void Media::process_inputs() {
+void Media::process_event() {
     switch (event.type) {
         case Event::KeyPressed:
             some_key_pressed = now_ms();

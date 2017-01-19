@@ -29,6 +29,10 @@ public:
         win->setActive();
     }
 
+    static void set_mouse_visible(bool value){
+        win->setMouseCursorVisible(value);
+    }
+
     static void display() {
         win->display();
     }
@@ -53,9 +57,10 @@ public:
     static void init();
     static void close();
 
-    static bool win_poll_event(){ return win->pollEvent(event); }
-    static void process_inputs();
-
+    static bool poll_event(){ return win->pollEvent(event); }
+    static void process_event();
+    static void process_all_events(){ while(poll_event())process_event(); }
+    
     static time_type some_keyp() {
         return some_key_pressed;
     }
